@@ -1,0 +1,22 @@
+body{font-family: Tahoma, Arial, Helvetica, sans-serif;}
+#body{width:800px;border:1px solid #ccc;}
+
+h1{display:block;padding:0 10px 20px 10px;border-bottom:1px solid #333;font-size:27px;margin:10px;}
+h1 em{float:right;padding:5px 10px;font-style:normal;border:3px solid #333;}
+
+
+.info{width:380px;float:left; font-size:12px;margin:30px 10px;border:1px solid #333;padding:5px;}
+.info td{padding:3px;}
+.c{text-align:center;}
+.r{text-align:right;}
+
+.inline{width:780px;;font-size:13px;margin:10px;border-collapse:collapse;}
+.inline th{padding:8px;background:#eee;font-weight:normal}
+a{text-decoration:none;color:#000;}
+.inline td{padding:8px 5px;font-size:12px}
+.inline tr{border-bottom:1px solid #ccc;}
+
+.total-price{margin:20px 0;float:right;}
+.total-price span{font-weight:bold;margin:0 10px;font-size:18px;}
+
+.hide{display: none;}
