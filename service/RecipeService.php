@@ -40,7 +40,27 @@ class RecipeService{
                                     group by p.`id` LIMIT 1", array( $recipeId ));
     }
     
-        
+    public function getProductPrice($id){
+        $r = $this->conn->select("SELECT (coalesce(SUM(i.`quantity_kg` * c.`price`),0) + p.price)  as total_price
+                                    FROM `product` p
+                                    LEFT JOIN `product_item` i ON p.`id`=i.`id_product`
+                                    LEFT JOIN `color` c ON i.`id_color`=c.`id`
+                                    WHERE p.`id`=?", array($id));
+        return round($r[0]['total_price'],5);
+    }
+
+
+    public function getCountCustomerByRecipe($idRecipe){
+        $r = $this->conn->select("SELECT c.id
+                                FROM `order` o
+                                JOIN `customer` c ON o.id_customer=c.id
+                                LEFT JOIN `order_item` i ON i.`id_order`= o.`id`
+                                LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product`
+                                JOIN `product` p ON i.id_product=p.id
+                                WHERE o.`id_customer`=c.`id` AND i.id_product=?
+                                Group by c.id", array($idRecipe));
+         return count($r);       
+    }
     
     public function create($code, $label, $price, $isRecipe){
             $this->validateRecipe($code, $label, $price);

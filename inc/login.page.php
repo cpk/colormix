@@ -46,7 +46,7 @@ function isCurrent($pageName, $param){
            <div id="status"></div>
         <div id="form">
         	
-                <form method="GET" action="./inc/log.in.php" name="login" class="loginPage">
+                <form method="POST" action="./inc/log.in.php" name="login" class="loginPage">
                     <h3>Prihlasovacia stránka</h3>
             	<?php echo (isset($_SESSION["status"]) ? '<p class="error">'.$_SESSION["status"].'</p>' : ""); unset($_SESSION["status"]); ?>
                 <div><label>Prihlasovacie meno: </label><input type="text" name="login"  class="w200 required" /></div>

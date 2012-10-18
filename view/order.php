@@ -7,6 +7,7 @@
     require_once  BASE_DIR."/presenter/OrderPresenter.php";
     require_once  BASE_DIR."/presenter/OrderItemPresenter.php";
     require_once  BASE_DIR."/presenter/OrderRecipePresenter.php";
+    require_once  BASE_DIR."/presenter/OrderByRecipePresenter.php";
     
 
 
@@ -27,6 +28,9 @@
             switch ($subpage){
                 case "view" : 
                         include_once BASE_DIR."/view/order.view.php";
+                    break;
+                case "orderbyrecipe" : 
+                        include_once BASE_DIR."/view/order.orderbyrecipe.php";
                     break;
                  case "new" : 
                         include_once BASE_DIR."/view/order.new.php";

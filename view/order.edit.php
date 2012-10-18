@@ -3,7 +3,6 @@
     $os = new OrderService($conn);
     $order = $os->retriveById($_GET['id']);
     $oip = new OrderItemPresenter($conn, WEIGHT_UNIT ,PRICE_UNIT, $os );
-
 ?>
 <div class="tbox mw">
     <strong>Editácia objednávky: <b><?php echo $_GET['id']; ?></b></strong>
@@ -32,7 +31,7 @@
         <table  class="cst">
             <tr>
                 <td>Objednávateľ:</td>
-                <td><b><?php echo $order[0]['name']; ?></b></td>
+                <td><b><a href="/index.php?p=customer&sp=edit&id=<?php echo $order[0]['id_customer']; ?>"><?php echo $order[0]['name']; ?></a></b></td>
             </tr>
             <tr>
                 <td>Adresa:</td>
@@ -42,7 +41,12 @@
                 <td>IČO/DIČ:</td>
                 <td><?php echo $order[0]['ico']." / ".$order[0]['dic'] ; ?></td>
             </tr>
-             
+            <?php if(strlen($order[0]['contact_person']) != 0){?>
+            <tr>
+                <td>Kontaktná osoba:</td>
+                <td><a href="/index.php?p=customer&sp=edit&id=<?php echo $order[0]['id_customer']; ?>"><?php echo $order[0]['contact_person']; ?></a></td>
+            </tr>
+            <?php } ?> 
         </table>
         <div class="clear"></div>
         
@@ -85,16 +89,25 @@
         <!-- PRIDANIE POLOZKY OBEJDNAVKY ========================== -->
         
         <div class="add-product">
+            <strong>Pridanie novej proložky do objednávky</strong>
             <form id="pf"> 
-                <span class="fixsize">Položka objednávky</span>
-            <input type="text" class="w300" id="p" />
-            <span  class="fixsize">Množstvo: </span>
-            <input maxlength="10" type="text" class="w50 c required" name="quantity_kg" />
-            
-            <span  class="fixsize">Cena za j. predaj: </span>
-            <input maxlength="10" type="text" class="w50 c required" name="price_sale" />
-            
-            <input type="submit" class="ibtn-sm" value="Pridať" />
+            <div>    
+                <span class="fixsize">Položka objednávky:</span>
+                <input type="text" class="w400" id="p" />
+                <span class="margin-l">Množstvo: </span>
+                <input maxlength="10" type="text" class="w100 c required" name="quantity_kg" />
+                <div class="clear"></div>
+            </div> 
+            <div class="odd">     
+                <span class="fixsize">Percentuálny zisk: </span>
+                <input maxlength="10" type="text" class="w100 c required" name="profit" />
+                <span>%</span>
+                <span  class="margin-l">Cena za jednotku predaj: </span>
+                <input maxlength="10" type="text" class="w100 c required" name="price_sale" />
+                <span><?php echo PRICE_UNIT; ?></span>
+                <span class="margin-l">Náklady na 1kg: <em id="recipePrice">-</em><?php echo PRICE_UNIT; ?></span>
+                <input type="submit" class="ibtn-sm flr" value="Pridať +" />
+             </div>
             <input type="hidden" name="act"  value="13" />
             <input type="hidden" name="id_order"  value="<?php echo $_GET['id']; ?>" />
             <input type="hidden" name="id_product"  value="0" />

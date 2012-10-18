@@ -35,10 +35,10 @@ class OrderRecipeService {
                 array( $idProduct, $idColor, $price, $quantityKg, $orderId));
     }
     
-    public function updateItem($itemId, $quantity){
+    public function updateItem($itemId, $quantity, $priceSale){
          $this->checkQuantity($quantity);
-         $this->conn->update("UPDATE `order_item` SET `quantity`=? WHERE `id`=? LIMIT 1", 
-                 array($quantity, $itemId));
+         $this->conn->update("UPDATE `order_item` SET `quantity`=?, `price_sale`=? WHERE `id`=? LIMIT 1", 
+                 array($quantity, floatval($priceSale), $itemId));
     }
     
     
@@ -59,7 +59,7 @@ class OrderRecipeService {
 
 
     public function getRecipeItemsBy($itemId, $orderId){
-        return $this->conn->select("SELECT i.`id`, oi.`id` as id2,  c.`name`, c.`code`, i.`price`, oi.`price_sale`, i.`quantity_kg`, m.`unit`, m.`id` as id_unit, oi.`quantity`
+        return $this->conn->select("SELECT i.`id`, oi.`id` as id2,  c.`name`, c.`code`,c.`riedidlo`, i.`price`, oi.`price_sale`, i.`quantity_kg`, m.`unit`, m.`id` as id_unit, oi.`quantity`
                                     FROM `color` c, `order_subitem` i, `measurement` m, `order_item` oi
                                     WHERE i.`id_color`=c.`id` AND oi.`id`=? AND i.`id_order`=? AND m.`id`=c.`id_measurement` AND  i.`id_product`=oi.`id_product`", 
                 array( $itemId, $orderId ));

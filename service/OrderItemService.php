@@ -79,16 +79,29 @@ class OrderItemService {
     /* PROJECTION --- */
     
     public function retriveItemsByOrderId($orderId){
-        return $this->conn->select("SELECT i.`id`, i.`price`,i. `price_sale`, i.`quantity`, p.`code`, p.`label`, p.`recipe`,
-                                        SUM(i.`quantity` * i.`price`) as i_price ,
-                                        i.`quantity` * i.`price_sale` as total_price_sale ,
-                                        SUM(i.`quantity` * si.`quantity_kg` * si.`price`) as si_price,
-                                        SUM(si.`quantity_kg` * si.`price`) as r_price
-                                    FROM `order_item` i
-                                    JOIN `product` p ON p.`id`=i.`id_product`
-                                    LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product` AND  si.`id_order`=$orderId
-                                    WHERE i.`id_order`=?
-                                    GROUP BY i.`id`", array( $orderId ));
+        return $this->conn->select("SELECT 
+                                    i.id,
+                                    i.price,
+                                    i.price_sale,
+                                    p.code,
+                                    p.label,
+                                    p.recipe,
+                                    @tdq := ROUND((i.quantity + (SELECT coalesce(SUM(x.quantity_kg),0) FROM order_subitem x, color y WHERE y.id=x.id_color AND y.riedidlo=1 AND x.id_product=i.id_product AND x.id_order=i.id_order)),2) as mnozstvo_spolu, 
+                                    ROUND(@tdq  * i.price_sale ,2) as cena_spolu_predaj,
+                                    @cena_tovar := ROUND(SUM(i.quantity * i.price),2) as cena_tovar,
+                                    @pigmenty := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.riedidlo!=1 AND x.id_product=i.id_product AND x.id_order=i.id_order) as pigments,
+                                    @riedidla := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.riedidlo=1 AND x.id_product=i.id_product AND x.id_order=i.id_order) as riedidla,
+                                    @cena_rcp := ROUND(@pigmenty * i.quantity + @riedidla,2) as cena_spolu_nakup,
+                                    ROUND(@pigmenty + @riedidla,2) as jednotkova_cena_spolu_nakup
+                                FROM
+                                    order_item i
+                                        JOIN
+                                    product p ON p.id = i.id_product
+                                        LEFT JOIN
+                                    order_subitem si ON si.id_product = i.id_product AND si.id_order =?
+                                WHERE
+                                    i.id_order =?
+                                GROUP BY i.id", array( $orderId,$orderId ));
     }
     
     

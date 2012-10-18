@@ -20,7 +20,7 @@ $rs = new RecipeService($conn);
         <form class="ajaxSubmit"> 
                 <div class="i ">
                     <p>Receptúra bola vytovorená: <b><?php echo $recipieData[0]['create']; ?></b></p>
-                    <p>Objednalo si ju: <a href="">0 zákazníkov</a></p>
+                    <p>Objednalo si ju: <a href="/index.php?p=order&amp;sp=orderbyrecipe&amp;id=<?php echo $_GET['id']; ?>"><?php echo $rs->getCountCustomerByRecipe($_GET['id']); ?> zákazníkov</a></p>
                 </div> 	
                 <div class="i ">
                     <span>Kód:</span><input 
@@ -52,7 +52,7 @@ $rs = new RecipeService($conn);
                         <?php echo getColorOptions( $conn); ?>
                 </select>
             
-            <span>Dávka na 1kg: </span>
+            <span id="label">Dávka na 1kg:</span>
             <input maxlength="10" type="text" class="w100 r required" name="quantity_kg" />
             <span id="unit"></span>
             <input type="submit" class="ibtn-sm" value="Pridať" />
@@ -68,7 +68,7 @@ $rs = new RecipeService($conn);
          <form  class="ajaxSubmit">
             <div class="i ">
                     <p>Tovar bol pridaný: <b><?php echo $recipieData[0]['create']; ?></b></p>
-                    <p>Objednalo si ju: <a href="">0 zákazníkov</a></p>
+                    <p>Objednalo si ju: <a href="/index.php?p=order&amp;sp=orderbyrecipe&amp;id=<?php echo $_GET['id']; ?>"><?php echo $rs->getCountCustomerByRecipe($_GET['id']); ?> zákazníkov</a></p>
             </div> 	
             <div class="i">
                     <label>Kód:</label><input maxlength="10" type="text" class="w100 required" name="code" 

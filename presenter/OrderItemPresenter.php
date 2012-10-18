@@ -48,8 +48,7 @@ class OrderItemPresenter {
     
      private function getItemsTableHead(){
         return '<thead><tr>
-                    <th>Kód</th>
-                    <th>Názov</th>
+                    <th class="nm">Názov</th>
                     <th class="il text-quantity required">Pč. j.</th>
                     <th>Cena za j. nákup</th>
                     <th>Cena spolu nákup</th>
@@ -63,16 +62,15 @@ class OrderItemPresenter {
         
     // (Sell price - cost price)/cost price*100 
      private function getRecipeItemTableRow($row){
-         $itemPrice = floatval(($row["recipe"] == 1 ? $row["r_price"] : $row["price"]));
+         $itemPrice = floatval(($row["recipe"] == 1 ? $row["jednotkova_cena_spolu_nakup"] : $row["price"]));
         return "<tr>".
-                '<td class="c w50">'.$row["code"].'</td>'.
-                ($row["recipe"] == 1 ? '<td class="recipe nm"><a href="index.php?p=order&amp;sp=redit&amp;id='.$row["id"].'">'
-                .$row["label"].'</a></td>' : '<td class="nm">'.$row["label"].'</td>') .
-                '<td class="r il">'.floatval($row["quantity"]).' '.($row["recipe"] == 1 ? 'kg' : 'ks').'</td>'.
-                '<td class="r">'.$itemPrice.' '.$this->priceUnit.'</td>'.
-                '<td class="r">'.number_format(round($row["i_price"] + $row["si_price"],2),2).' '.$this->priceUnit.'</td>'.
+                ($row["recipe"] == 1 ? '<td class="recipe nm"><a href="index.php?p=order&amp;sp=redit&amp;id='.$row["id"].'">'.$row["code"].' - '
+                .$row["label"].'</a></td>' : '<td class="nm">'.$row["code"].' - '.$row["label"].'</td>') .
+                '<td class="r il">'.$row["mnozstvo_spolu"].' '.($row["recipe"] == 1 ? 'kg' : 'ks').'</td>'.
+                '<td class="r">'.number_format($itemPrice,2).' '.$this->priceUnit.'</td>'.
+                '<td class="r">'.number_format($row["cena_spolu_nakup"] + $row["cena_tovar"],2).' '.$this->priceUnit.'</td>'.
                 '<td class="r il">'.$row["price_sale"].' '.$this->priceUnit.'</td>'.
-                '<td class="r">'.number_format(round($row["total_price_sale"],2),2).' '.$this->priceUnit.'</td>'.
+                '<td class="r">'.number_format($row["cena_spolu_predaj"],2).' '.$this->priceUnit.'</td>'.
                 '<td class="r">'.round((($row["price_sale"] - $itemPrice) / $itemPrice)*100,2 ).' %</td>'.
                 '<td class="c w50 hide"><a class="edit" href="#id'.$row["id"].'">upraviť</a></td>'.
                 '<td class="c w50 hide"><a class="del3" href="#id'.$row["id"].'"></a></td>'.
@@ -85,8 +83,8 @@ class OrderItemPresenter {
        if($data == null) return '<p class="alert">Objednávka neobsahuje žiadne položky</p>';
        $html = '';
        for($i=0 ; $i < count($data); $i++ ){
-           $this->totalPrice += round($data[$i]["i_price"] + $data[$i]["si_price"],2);
-           $this->saleTotalPrice += round($data[$i]['total_price_sale']);
+           $this->totalPrice += round($data[$i]["cena_spolu_nakup"] + $data[$i]["cena_tovar"],2);
+           $this->saleTotalPrice += round($data[$i]['cena_spolu_predaj']);
            $html .= $this->getRecipeItemTableRow($data[$i]);
        }
        return  $html;

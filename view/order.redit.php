@@ -3,6 +3,8 @@
     $ors = new OrderRecipeService($conn);
     $orp = new OrderRecipePresenter($conn, WEIGHT_UNIT ,PRICE_UNIT, $ors);
     $data = $ors->getRecipeInfo($_GET['id']);
+    
+    $table = $orp->printRecipieItems($_GET['id'], $data[0]['id_order'])
 
 ?>
 <div class="tbox">
@@ -18,12 +20,14 @@
             <span>Cena predaj / kg:</span>
             <input type="text" name="price_sale" class="c w50 required" value="<?php echo (float)$data[0]['price_sale']; ?>" /><?php echo PRICE_UNIT; ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             <span>Počet:</span>
-            <input type="text" name="quantity" class="c w50 required" value="<?php echo (float)$data[0]['quantity']; ?>" /><?php echo WEIGHT_UNIT; ?>
-            <input type="submit" class="ibtn-sm" value="Uložiť" />
+            <input type="text" name="quantity" class="c w50 required" value="<?php echo (float)$data[0]['quantity']; ?>" /><?php echo WEIGHT_UNIT; ?>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+            <input type="submit" class="ibtn-sm" value="Uložiť a prepočítať" />
             <input type="hidden" name="act"  value="15" />
             <input type="hidden" name="id"  value="<?php echo $_GET['id']; ?>" />
         </form>
         <a href="index.php?p=order&amp;sp=edit&amp;id=<?php echo $data[0]['id_order']; ?>" title="Späť k objednávke" id="back">&laquo; späť</a>
+        
+        <div id="total"><?php echo $orp->getTotalWeight();?></div>
         <div class="clear"></div>
         
         
@@ -33,7 +37,7 @@
         <!-- TABLE with items   ==========================  -->
         <form class="inlineEditing ercp">
         <?php
-            echo $orp->printRecipieItems($_GET['id'], $data[0]['id_order']);
+            echo $table;
         ?>
             <input type="hidden" name="act" value="16" />
             <input type="hidden" value="order_item" name="table" />
@@ -55,7 +59,7 @@
                         <?php echo getColorOptions( $conn); ?>
                 </select>
             
-            <span>Dávka na 1kg: </span>
+            <span id="label">Dávka na 1kg:</span>
             <input maxlength="10" type="text" class="w50 c required" name="quantity_kg" />
             <span id="unit"></span>
             <span>Cena za j.: </span>

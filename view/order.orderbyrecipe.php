@@ -1,7 +1,7 @@
 <?php
     if(!$auth->isLogined()){ die("Neautorizovaný prístup."); }
     $os =  new OrderService($conn);;
-    $p = new OrderPresenter($conn, WEIGHT_UNIT ,PRICE_UNIT, $os);
+    $p = new OrderByRecipePresenter($conn, WEIGHT_UNIT ,PRICE_UNIT, $os);
     
     function printOptionOrders(){
         if(!isset($_GET['orderBy']))
@@ -35,30 +35,12 @@
 ?>
 
 <div class="tbox">
-    <strong>Obejdnávky</strong>
+    <strong>Zoznam zákazníkov, ktorí si objednali daný tovar</strong>
     <div class="tcontent">
         
         
-        <form class="filter" method="get" action="index.php?p=recipe">
-            <input type="hidden" value="order" name="p" />
-                <select name="orderBy">
-                   <?php echo printOptionOrders(); ?>
-                </select>
-                <span>Od dátumu:</span>
-                <input type="text" name="dateFrom" value="<?php echo (isset($_GET['dateFrom'])? $_GET['dateFrom'] : ""); ?>" class="date w100" />
-                <span> do:</span>
-                <input type="text" name="dateTo" value="<?php echo (isset($_GET['dateTo'])? $_GET['dateTo'] : ""); ?>" class="date w100" />
-                <span> Odberateľ:</span>
-                <input type="text" name="q"  class="w200" value="<?php echo (isset($_GET['q'])? $_GET['q'] : ""); ?>" />
-                <input type="submit" value="zobraz" class="ibtn-sm" />
-
-            
-            <div id="act" class="hidden">10</div>
-        </form>
+        <?php echo $p->printOrdersByRecipe($_GET['id'], $_GET['s'], PEER_PAGE); ?>
         
-        
-        
-        <?php echo $p->printOrders($_GET['s'], PEER_PAGE); ?>
         <div class="clear"></div>
         <!-- 
         <div id="stats-info">

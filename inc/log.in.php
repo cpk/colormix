@@ -13,13 +13,13 @@
     try{
         $conn = Database::getInstance(SERVER, USER, PASS, DB_NAME);
         $auth = new Authenticate($conn);
-        $auth->login($_GET['login'] ,$_GET['pass'], $_GET['token']);
-        header("Location: ../");
+        $auth->login($_POST['login'] ,$_POST['pass'], $_POST['token']);
     }catch(AuthException $e){
             $_SESSION['status'] = $e->getMessage();
     }catch(MysqlException $e){
             exit( "Vyskytol sa problém s databázou." );
     }
+    header("Location: ../");
     exit;
 
 		

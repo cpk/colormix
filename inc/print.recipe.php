@@ -30,12 +30,14 @@
     $os = new OrderService($conn);
     $order = $os->retriveById($data[0]['id_order']);
     $oip = new OrderItemPresenter($conn, WEIGHT_UNIT ,PRICE_UNIT, $os );
+    $table = $orp->printRecipieItems($_GET['id'], $data[0]['id_order']);
 ?>
 
         
     <div id="body">
         <!-- HEAD   ==========================  -->
-        <h1 class="rcp"><?php echo $data[0]['code']." - ". $data[0]['label']; ?><em><?php echo (float)$data[0]['quantity']; ?>kg</em></h1>
+        <h1 class="rcp cst"><?php echo $data[0]['code']." - ". $data[0]['label']; ?></h1>
+        <div id="total"><?php echo $orp->getTotalWeight();?></div>
         
 
 
@@ -74,7 +76,7 @@
         <!-- TABLE with items   ==========================  -->
 
         <?php
-            echo $orp->printRecipieItems($_GET['id'], $data[0]['id_order']);
+            echo $table;
         ?>
            
         

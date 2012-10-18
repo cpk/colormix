@@ -52,6 +52,7 @@ class OrderPresenter {
                     <th>Odberateľ</th>
                     <th>Nákup</th>
                     <th>Predaj</th>
+                    <th>Zisk</th>
                     <th>Zaevidoval</th>
                     <th>Upraviť</th>
                     <th>Zmazať</th>
@@ -60,11 +61,12 @@ class OrderPresenter {
         
     private function getOrderTableRow($row){
         return "<tr>".
-                '<td class="c w50">'.$row["id"].'</td>'.
+                '<td class="c w50">OBJ-'.$row["id"].'</td>'.
                 '<td class="c">'.date('d.m.Y', strtotime($row['date']) ).'</td>'.
                 '<td>'.$row["name"].'</td>'.
-                '<td class="r">'.  number_format(round($row["total"],2),2).' '.$this->priceUnit.'</td>'.
-                '<td class="r">'.  number_format(round($row["total_sale"],2),2).' '.$this->priceUnit.'</td>'.
+                '<td class="r">'.  number_format(round($row["spolu_nakup"],2),2).' '.$this->priceUnit.'</td>'.
+                '<td class="r">'.  number_format(round($row["spolu_predaj"],2),2).' '.$this->priceUnit.'</td>'.
+                '<td class="r">'.  $this->getProfit($row["spolu_nakup"], $row["spolu_predaj"]).'</td>'.
                 '<td class="c">'.$row["givenname"].' '.substr($row["surname"], 0, 1).'. </td>'.
                 '<td class="c w50"><a class="edit" href="./index.php?p=order&amp;sp=edit&amp;id='.$row["id"].'">upraviť</a></td>'.
                 '<td class="c w50"><a class="del" href="#id'.$row["id"].'"></a></td>'.
@@ -79,6 +81,10 @@ class OrderPresenter {
     }
     
   
+     public function getProfit($nakup, $predaj){
+        if($predaj == 0) return "-";
+        return  round(((($predaj - $nakup) / $nakup) * 100),2). " %";
+    }
 
     
 }

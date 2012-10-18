@@ -16,19 +16,19 @@ class ColorService{
     
     
     public function recievAllColors(){
-       return  $this->conn->select("SELECT c.`id`,c.`code`,c.`name`,c.`price`, m.`unit` 
+       return  $this->conn->select("SELECT c.`id`,c.`code`,c.`name`,c.`price`,c.`riedidlo`, m.`unit` 
                                     FROM `color` c, `measurement` m
                                     WHERE m.`id`=c.`id_measurement` ORDER BY c.`code`");
     }
     
     public function recievById( $id ){
-        return  $this->conn->select("SELECT c.`id`,c.`code`,c.`name`,c.`price`,c.`id_measurement`, m.`unit` 
+        return  $this->conn->select("SELECT c.`id`,c.`code`,c.`name`,c.`price`,c.`id_measurement`,c.`riedidlo`, m.`unit` 
                                      FROM `color` c, `measurement` m 
                                      WHERE m.`id`=c.`id_measurement` AND c.`id`=".intval($id). " LIMIT 1");
     }
     
      public function recievByCode( $code ){
-        return  $this->conn->select("SELECT c.`id`,c.`code`,c.`name`,c.`price`, m.`unit` 
+        return  $this->conn->select("SELECT c.`id`,c.`code`,c.`name`,c.`price`,c.`riedidlo`, m.`unit` 
                                      FROM `color` c, `measurement` m
                                      WHERE m.`id`=c.`id_measurement` AND c.`id`=?", array($code));
     }
@@ -36,10 +36,10 @@ class ColorService{
     
     
     
-    public function create($code, $name, $price, $id_measurement){
+    public function create($code, $name, $price, $riedidlo, $id_measurement){
         $this->validateColor($code, $name, $price);
-        $this->conn->insert("INSERT INTO `color` (`code`, `name`, `price`, `id_measurement`) VALUES (?,?,?,?)", 
-                array($code, $name, $price, $id_measurement));
+        $this->conn->insert("INSERT INTO `color` (`code`, `name`, `price`, `riedidlo`, `id_measurement`) VALUES (?,?,?,?,?)", 
+                array($code, $name, $price, $riedidlo, $id_measurement));
     }
     
     
@@ -50,10 +50,10 @@ class ColorService{
     }
     
     
-    public function update($id, $code, $name, $price, $id_measurement ){
+    public function update($id, $code, $name, $price, $riedidlo, $id_measurement ){
         $this->validateColor($code, $name, $price);
-        $this->conn->update("UPDATE `color` SET code=?, name=?, price=?, id_measurement=? WHERE `id`=? LIMIT 1", 
-                array($code, $name, $price, $id_measurement, $id));
+        $this->conn->update("UPDATE `color` SET code=?, name=?, price=?, riedidlo=?, id_measurement=? WHERE `id`=? LIMIT 1", 
+                array($code, $name, $price, $riedidlo, $id_measurement, $id));
     }
     
             

@@ -20,6 +20,8 @@ class Converter {
     
     private static $ML_UNIT = 4;
     
+    private static $L_UNIT = 5;
+    
        
     public static function gramsToKilorams($gVal){
         return $gVal / 1000;
@@ -36,7 +38,10 @@ class Converter {
                 return self::gramsToKilorams($val);
              break;
             case self::$KS_UNIT :
+                return 0;
+                break;
             case self::$KG_UNIT :
+            case self::$L_UNIT : 
                 return $val;
              break;
             case self::$ML_UNIT :

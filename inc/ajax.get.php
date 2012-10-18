@@ -45,15 +45,17 @@
 		switch((int)$_GET['act']){
 			/* Editacia pigmentov */
 			case 1 : 
-                             $cs = new ColorService($conn);
-                            $cs->update($_GET['id'], $_GET['code'], $_GET['name'], $_GET['price'], $_GET['id_measurement']);
+                            $cs = new ColorService($conn);
+                            $riedidlo = (isset($_GET['riedidlo']) && $_GET['riedidlo'] == "on" ? 1 : 0);
+                            $cs->update($_GET['id'], $_GET['code'], $_GET['name'], $_GET['price'], $riedidlo,  $_GET['id_measurement']);
                             $data = array( "err" => 0, "msg" => $updateMsg, "update" => 1 );
 			break;
                     
                         /* Pridavanie pigmentov */
                          case 2 : 
                             $cs = new ColorService($conn);
-                            $cs->create($_GET['code'], $_GET['name'], $_GET['price'], $_GET['id_measurement']);
+                             $riedidlo = (isset($_GET['riedidlo']) && $_GET['riedidlo'] == "on" ? 1 : 0);
+                            $cs->create($_GET['code'], $_GET['name'], $_GET['price'], $riedidlo,  $_GET['id_measurement']);
                             $data = array( "err" => 0, "msg" => $createMsg );
 			break;
                     
@@ -188,12 +190,13 @@
                             /* Upravenie poctu KG v recepture objednavky */
                          case 15 : 
                             $ris = new OrderRecipeService($conn);
-                            $ris->updateItem($_GET['id'], $_GET['quantity']);
+                            $ris->updateItem($_GET['id'], $_GET['quantity'], $_GET['price_sale']);
                             $info = $ris->getRecipeInfo($_GET['id']);
                             $rp = new OrderRecipePresenter($conn, WEIGHT_UNIT, PRICE_UNIT, $ris ); 
                             $data = array( "err" => 0, 
                                             "data" => $rp->getTbodyOfTableItems($_GET['id'], $info[0]['id_order']),
-                                            "totalPrice" => $rp->getResume() );
+                                            "totalPrice" => $rp->getResume(),
+                                            "total" => $rp->getTotalWeight());
 			break;
                     
                             /* inline editing v polozke objednavky */
@@ -204,7 +207,8 @@
                             $rp = new OrderRecipePresenter($conn, WEIGHT_UNIT, PRICE_UNIT, $ris ); 
                             $data = array( "err" => 0, 
                                             "data" => $rp->getTbodyOfTableItems($_GET['recepeId'], $info[0]['id_order']),
-                                            "totalPrice" => $rp->getResume() );
+                                            "totalPrice" => $rp->getResume(),
+                                            "total" => $rp->getTotalWeight() );
 			break;
                     
                     
@@ -216,7 +220,8 @@
                             $rp = new OrderRecipePresenter($conn, WEIGHT_UNIT, PRICE_UNIT, $ris ); 
                             $data = array( "err" => 0, 
                                             "data" => $rp->getTbodyOfTableItems($_GET['recepeId'], $info[0]['id_order']),
-                                            "totalPrice" => $rp->getResume() );
+                                            "totalPrice" => $rp->getResume(),
+                                            "total" => $rp->getTotalWeight() );
 			break;
                     
                             /* Pridanie novej polozky receptury do obj. */
@@ -228,7 +233,8 @@
                             $orp = new OrderRecipePresenter($conn, WEIGHT_UNIT, PRICE_UNIT, $ors ); 
                             $data = array( "err" => 0, 
                                             "data" => $orp->getTbodyOfTableItems($_GET['id'], $_GET['idOrder']),
-                                            "totalPrice" => $orp->getResume() );
+                                            "totalPrice" => $orp->getResume(),
+                                            "total" => $orp->getTotalWeight() );
 			break;
                            /* AUTOCOMPLETE customer */
                             case 19 : 
@@ -243,7 +249,8 @@
                             $cs = new CustomerService($conn);
                             $cs->create($_GET['name'], $_GET['street'], 
                                         $_GET['zip'], $_GET['city'], 
-                                        $_GET['ico'], $_GET['dic']);    
+                                        $_GET['ico'], $_GET['dic'],
+                                        $_GET['contact_person'], $_GET['email'], $_GET['tel']);    
                             $data = array( "err" => 0, "msg" => $createMsg );    
 			break;
                             /* Pridanie noveho zakaznika */
@@ -251,7 +258,8 @@
                             $cs = new CustomerService($conn);
                             $cs->update($_GET['name'], $_GET['street'], 
                                         $_GET['zip'], $_GET['city'], 
-                                        $_GET['ico'], $_GET['dic'], $_GET['id']);    
+                                        $_GET['ico'], $_GET['dic'], $_GET['id'],
+                                        $_GET['contact_person'], $_GET['email'], $_GET['tel']);    
                             $data = array( "err" => 0, "msg" => $updateMsg ,"update" => 1);    
 			break;
                             
@@ -271,7 +279,12 @@
                         case 24 : 
                             $cs = new ColorService($conn);
                             $d = $cs->recievById($_GET['id']);
-                            $data = array( "err" => 0, "price" => floatval($d[0]['price']), "unit" => $d[0]['unit'] );    
+                            $data = array( "err" => 0, "price" => floatval($d[0]['price']), "unit" => $d[0]['unit'],"riedidlo" => $d[0]['riedidlo'] );    
+                        break;
+                        // zisti cenu produktu, na zakladne dnej sa pocita percentualny zisk
+                        case 25 : 
+                            $rs = new RecipeService($conn); 
+                            $data = array( "err" => 0, "msg" => "", "price" => $rs->getProductPrice($_GET['id']));
                         break;
                      
 		}

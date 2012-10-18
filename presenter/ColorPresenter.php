@@ -67,13 +67,18 @@ class ColorPresenter{
                         maxlength="11" type="text" class="w100 r required" name="price" />
                        <span>'.$this->priceUnit.'</span>   
                 </div>
-                 <div class="i odd">
+                <div class="i odd">
+                    <label>Riedidlo/obal:</label><input '.
+                               (isset($data[0]["riedidlo"]) && $data[0]["riedidlo"] == 1 ? 'checked="checked"' : "").'" 
+                                type="checkbox" name="riedidlo" /><span>Nebude sa prepočítavať celkovou hmotnosťou</span>
+                </div>
+                 <div class="i ">
                         <label>Jednotka: </label><select class="w100" name="id_measurement">'.
                             getOptions( $this->conn, "measurement", "unit", ($colorId == 0 ? 0 : $data[0]["id_measurement"])).'
                         </select>
                 </div>
                
-                <div class="i">
+                <div class="i odd">
                     <input type="hidden" value="color" name="table" />
                     <input type="hidden" value="'.($colorId == 0 ? $this->CREATE : $this->UPDATE ).'" name="act" />
                     <input type="submit" class="ibtn" value="Uložiť" />'.

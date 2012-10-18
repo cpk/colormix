@@ -35,24 +35,24 @@ class CustomerService {
     
     
     
-    public function create($name, $street, $zip, $city, $ico, $dic){
-        $this->validateOrder($name, $street, $zip, $city, $ico, $dic);
-        $this->conn->insert("INSERT INTO `customer` (`name`, `street`, `zip`, `city`, `ico`, `dic`) 
-                             VALUES (?,?,?,?,?,?)",
-                array ($name, $street, $zip, $city, $ico, $dic) );
+    public function create($name, $street, $zip, $city, $ico, $dic, $contactName, $email, $tel){
+        $this->validateOrder($name, $street, $zip, $city, $ico, $dic, $contactName, $email, $tel);
+        $this->conn->insert("INSERT INTO `customer` (`name`, `street`, `zip`, `city`, `ico`, `dic`,`contact_person`,`email`, `tel`) 
+                             VALUES (?,?,?,?,?,?,?,?,?)",
+                array ($name, $street, $zip, $city, $ico, $dic, $contactName, $email, $tel) );
     }
     
     
     
     
     
-     public function update($name, $street, $zip, $city, $ico, $dic, $id){
-        $this->validateOrder($name, $street, $zip, $city, $ico, $dic);
+     public function update($name, $street, $zip, $city, $ico, $dic, $id, $contactName, $email, $tel){
+        $this->validateOrder($name, $street, $zip, $city, $ico, $dic, $contactName, $email, $tel);
         $this->conn->insert("UPDATE `customer` 
-                             SET `name`=?, `street`=?, `zip`=?, `city`=?, `ico`=?, `dic`=? 
+                             SET `name`=?, `street`=?, `zip`=?, `city`=?, `ico`=?, `dic`=?, `contact_person`=?,`email`=?, `tel`=?
                              WHERE `id`= ?
                              LIMIT 1",
-                array ($name, $street, $zip, $city, $ico, $dic, $id) );
+                array ($name, $street, $zip, $city, $ico, $dic, $contactName, $email, $tel, $id) );
     }
     
     
@@ -83,7 +83,7 @@ class CustomerService {
     
     
 
-    private function validateOrder($name, $street, $zip, $city, $ico, $dic){
+    private function validateOrder($name, $street, $zip, $city, $ico, $dic, $contactName, $email, $tel){
         
         if(strlen($name) == 0){
             throw new ValidationException("Názov odberateľa nie je vyplnený");
@@ -107,13 +107,30 @@ class CustomerService {
         if(strlen($dic) > 0 && strlen($dic) > 12){
             throw new ValidationException("DIČ môže obsahovať max. 12 znakov");
         }
+        
+        if(strlen($contactName) > 0 && strlen($contactName) > 40){
+            throw new ValidationException("Meno môže obsahovať max. 40 znakov");
+        }
+        
+        if(strlen($email) > 0 && strlen($email) >40){
+            throw new ValidationException("E-mail môže obsahovať max. 40 znakov");
+        }
+        
+        if(strlen($email) > 0 && !isEmail($email)){
+            throw new ValidationException("Neplatná emailová adresa.");
+        }
+        
+        if(strlen($tel) > 0 && strlen($tel) > 20){
+            throw new ValidationException("Tel. kontakt môže obsahovať max. 20 znakov");
+        }
     }
     
     
     private function where($searchQuery){
         if($searchQuery != null)   return " WHERE `name` LIKE '%".$searchQuery."%' ";
     }
-
+    
+    
 
 }
 

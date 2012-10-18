@@ -106,6 +106,22 @@ class CustomerPresenter {
                 ($customerId != 0 ?  $data[0]["dic"] : "").'" 
                         maxlength="12" type="text" class="w100" name="dic"/>
                 </div>
+                <strong>Kontaktná osoba:</strong>
+                 <div class="i">
+                    <label>Meno a priezvisko:</label><input value="'.
+                ($customerId != 0 ?  $data[0]["contact_person"] : "").'" 
+                        maxlength="40" type="text" class="w300" name="contact_person"/>
+                </div>
+                <div class="i odd">
+                    <label>E-mail:</label><input value="'.
+                ($customerId != 0 ?  $data[0]["email"] : "").'" 
+                        maxlength="40" type="text" class="w300" name="email"/>
+                </div>
+                 <div class="i">
+                    <label>Telefonický kontakt:</label><input value="'.
+                ($customerId != 0 ?  $data[0]["tel"] : "").'" 
+                        maxlength="20" type="text" class="w300" name="tel"/>
+                </div>
                 <div class="i">
                     <input type="hidden" value="'.($customerId == 0 ? $this->CREATE : $this->UPDATE ).'" name="act" />
                     <input type="submit" class="ibtn" value="Uložiť" />'.

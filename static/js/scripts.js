@@ -26,7 +26,6 @@ function request(form){
 			return false;
 		}
 		$.getJSON(getUrl, data, function(json) {  
-                    console.log(json);
 		 	if(json.err === 0){
 				if(json.html !== undefined){
 					$(json.selector).html(json.html);
@@ -82,6 +81,19 @@ function validate(f){
 	return valid;	
 }
 
+function getProductPrice(id){
+    $('input[name=price_sale]').val('');
+    $('input[name=profit]').val('');
+    $.getJSON(getUrl, {act: 25, id: id}, function(json) {
+       if(json.err === 0){
+           $('#recipePrice').text(json.price);
+       }else{
+           showStatus(json);
+       }
+       
+    });  
+}
+
 function initDate(){
      $('.date').datepicker({
             dayNamesMin: ['Ne', 'Po', 'Út', 'St', 'Št', 'Pi', 'So'], 
@@ -108,6 +120,37 @@ $(function() {
         
        initDate();
         
+        
+        // Vypocita percentualny zisk v polozke objednavky
+        $('input[name=profit]').change(function(){
+            var priceNakup = parseFloat($('#recipePrice').text()),
+                priceInput = $('input[name=price_sale]'),
+                percProfit = parseFloat($(this).val());
+            if(priceNakup === '-') return;
+            if(percProfit === 0){
+                priceInput.val(priceNakup);
+            }else{
+                var price = (priceNakup / 100) * (percProfit + 100);
+                priceInput.val(Math.round(price*10000)/10000);
+            }
+        });
+        
+        // Vypocita percentualny zisk v polozke objednavky
+        $('input[name=price_sale]').change(function(){
+            var priceNakup = parseFloat($('#recipePrice').text()),
+                profitInput = $('input[name=profit]'),
+                priceSale = parseFloat($(this).val());
+            if(priceNakup === '-') return;
+            if(priceNakup === priceSale){
+                profitInput.val(0);
+            }else{
+                var price = (priceSale - priceNakup) / priceNakup *100;
+                profitInput.val(Math.round(price*100)/100);
+            }
+        });
+        
+        
+        
         // AUTOCOMPLETE product --------------------------------------------------
 	$( "#p" ).autocomplete({
             source: function(reques, response){
@@ -119,6 +162,7 @@ $(function() {
                 });  
              },
             select: function( e, ui ) {
+                   getProductPrice(ui.item.v.id);
                    $('input[name=id_product]').val(ui.item.v.id);
                    $('#p').addClass('ok2');
             },
@@ -259,6 +303,7 @@ $(function() {
                     if(json.err === 0){
                         $('.tableitems').html(json.data);
                         $('.totalPrice').html(json.totalPrice);
+                        $('#total').html(json.total);
                         createClasses();
                         $('.inline').removeClass('exe');
                     }else{
@@ -311,9 +356,9 @@ $(function() {
              }
              $.getJSON(getUrl, data, function(json) {  
                     if(json.err === 0){
-                        console.log('ok');
                         $('.tableitems').html(json.data);
                         $('.totalPrice').html(json.totalPrice);
+                        $('#total').html(json.total);
                         createClasses();
                     }else{
                         showStatus(json);
@@ -327,7 +372,8 @@ $(function() {
        $('select[name=id_color]').change(function(){
            var id = $('select[name=id_color] option:selected').val(),
                price = $('input[name=price]'),
-               unit = $('#unit');
+               unit = $('#unit'),
+               label = $('#label');
            
            if(id === 0){
                if(price !== undefined)
@@ -339,6 +385,11 @@ $(function() {
                         if(price !== undefined)
                             price.val(json.price);
                         unit.text(json.unit);
+                        if(json.riedidlo == 1){
+                            label.text('Dávka celkovo:');
+                        }else{
+                            label.text('Dávka na 1kg:');    
+                        }
                     }else{
                         showStatus(json);
                     }
@@ -385,6 +436,7 @@ $(function() {
                      if(json.totalPrice !== undefined){ 
                         $('.tableitems').html(json.data);
                         $('.totalPrice').html(json.totalPrice);
+                        $('#total').html(json.total);
                          $('.inline').removeClass('exe');
                     }
                 }
@@ -434,7 +486,7 @@ $(function() {
                             obj = $(this); // current thead th item
                     if(input.length === 2 && input[0] === "text"){
                             tr.eq(i).html('<input style="width:'+ (obj.width() - 10) +'px" type="text" name="' + 
-                            input[1] + '" value="'+ tr.eq(i).text().replace(/(kg|ks|ml|€|g|\/)/ig ,"").trim() +'" class="ii '+(obj.hasClass("required") ? 'required' : '')+ '" />');
+                            input[1] + '" value="'+ tr.eq(i).text().replace(/(kg|ks|ml|L|€|g|\/)/ig ,"").trim() +'" class="ii '+(obj.hasClass("required") ? 'required' : '')+ '" />');
                     }else{
                             tr.eq(i).html('<textarea style="width:'+ (obj.width() - 10) +'px;height:70px;" name="' +input[1] + '" class="ii '+
                             (obj.hasClass("required") ? 'required' : '')+ '" >'+ tr.eq(i).text() +'</textarea>');
@@ -456,7 +508,6 @@ $(function() {
             $('.inline').addClass('exe');
             
             $.getJSON(getUrl, data, function(json) {  
-                console.log('saving..');
                 if(json.err === 1){ 
                     showStatus(json);
                     return false;
@@ -464,6 +515,8 @@ $(function() {
                     if(json.totalPrice !== undefined){ 
                         $('.tableitems').html(json.data);
                         $('.totalPrice').html(json.totalPrice);
+                        if(json.total !== undefined)
+                            $('#total').html(json.total);
                         createClasses();
                     }else{
                         tr.find('.ii').each(function(){
