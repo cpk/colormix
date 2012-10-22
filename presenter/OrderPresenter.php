@@ -37,7 +37,7 @@ class OrderPresenter {
        $this->createNavigator($pageNumber, $peerPage);
        
        $html = $this->navigator.'<div class="claer"></div><table>';
-       $html .= $this->getTableHead().'<tbody class="tableitems">';
+       $html .= $this->getTableHead().'<tbody class="order">';
        for($i=0 ; $i < count($data); $i++ ){
            $html .= $this->getOrderTableRow($data[$i]);
        }
@@ -64,8 +64,8 @@ class OrderPresenter {
                 '<td class="c w50">OBJ-'.$row["id"].'</td>'.
                 '<td class="c">'.date('d.m.Y', strtotime($row['date']) ).'</td>'.
                 '<td>'.$row["name"].'</td>'.
-                '<td class="r">'.  number_format(round($row["spolu_nakup"],2),2).' '.$this->priceUnit.'</td>'.
-                '<td class="r">'.  number_format(round($row["spolu_predaj"],2),2).' '.$this->priceUnit.'</td>'.
+                '<td class="r">'.  number_format(round($row["spolu_nakup"],2),2,","," ").' '.$this->priceUnit.'</td>'.
+                '<td class="r">'.  number_format(round($row["spolu_predaj"],2),2,","," ").' '.$this->priceUnit.'</td>'.
                 '<td class="r">'.  $this->getProfit($row["spolu_nakup"], $row["spolu_predaj"]).'</td>'.
                 '<td class="c">'.$row["givenname"].' '.substr($row["surname"], 0, 1).'. </td>'.
                 '<td class="c w50"><a class="edit" href="./index.php?p=order&amp;sp=edit&amp;id='.$row["id"].'">upraviť</a></td>'.

@@ -67,16 +67,19 @@ class OrderItemPresenter {
                 ($row["recipe"] == 1 ? '<td class="recipe nm"><a href="index.php?p=order&amp;sp=redit&amp;id='.$row["id"].'">'.$row["code"].' - '
                 .$row["label"].'</a></td>' : '<td class="nm">'.$row["code"].' - '.$row["label"].'</td>') .
                 '<td class="r il">'.$row["mnozstvo_spolu"].' '.($row["recipe"] == 1 ? 'kg' : 'ks').'</td>'.
-                '<td class="r">'.number_format($itemPrice,2).' '.$this->priceUnit.'</td>'.
-                '<td class="r">'.number_format($row["cena_spolu_nakup"] + $row["cena_tovar"],2).' '.$this->priceUnit.'</td>'.
-                '<td class="r il">'.$row["price_sale"].' '.$this->priceUnit.'</td>'.
-                '<td class="r">'.number_format($row["cena_spolu_predaj"],2).' '.$this->priceUnit.'</td>'.
+                '<td class="r">'.$this->formatPrice($itemPrice).'</td>'.
+                '<td class="r">'.$this->formatPrice($row["cena_spolu_nakup"] + $row["cena_tovar"]).'</td>'.
+                '<td class="r il">'.$this->formatPrice($row["price_sale"]).'</td>'.
+                '<td class="r">'.$this->formatPrice($row["cena_spolu_predaj"]).'</td>'.
                 '<td class="r">'.round((($row["price_sale"] - $itemPrice) / $itemPrice)*100,2 ).' %</td>'.
                 '<td class="c w50 hide"><a class="edit" href="#id'.$row["id"].'">upraviť</a></td>'.
                 '<td class="c w50 hide"><a class="del3" href="#id'.$row["id"].'"></a></td>'.
                "</tr>";
     }
     
+    private function formatPrice($price){
+        return number_format($price,2,","," ").' '.$this->priceUnit;
+    }
     
     public function getTbodyOfTableItems($orderId){
        $data =  $this->orderItemService->retriveItemsByOrderId($orderId);
@@ -106,8 +109,8 @@ class OrderItemPresenter {
     
     
       public function getResume($priceUnit){
-        return  'Celková cena nákup: <span>'.number_format($this->getTotalPrice(), 2). ' '.$priceUnit.'</span>'.
-                'Celková cena predaj: <span>'.number_format($this->getSaleTotalPrice(), 2). ' '.$priceUnit.'</span>'.
+        return  'Celková cena nákup: <span>'.$this->formatPrice($this->getTotalPrice()).'</span>'.
+                'Celková cena predaj: <span>'.$this->formatPrice($this->getSaleTotalPrice()).'</span>'.
                 'Zisk: <span>'.$this->getProfit().'</span>';
 }
     

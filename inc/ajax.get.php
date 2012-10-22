@@ -46,16 +46,14 @@
 			/* Editacia pigmentov */
 			case 1 : 
                             $cs = new ColorService($conn);
-                            $riedidlo = (isset($_GET['riedidlo']) && $_GET['riedidlo'] == "on" ? 1 : 0);
-                            $cs->update($_GET['id'], $_GET['code'], $_GET['name'], $_GET['price'], $riedidlo,  $_GET['id_measurement']);
+                            $cs->update($_GET['id'], $_GET['code'], $_GET['name'], $_GET['price'], $_GET['color_type'],  $_GET['id_measurement']);
                             $data = array( "err" => 0, "msg" => $updateMsg, "update" => 1 );
 			break;
                     
                         /* Pridavanie pigmentov */
                          case 2 : 
                             $cs = new ColorService($conn);
-                             $riedidlo = (isset($_GET['riedidlo']) && $_GET['riedidlo'] == "on" ? 1 : 0);
-                            $cs->create($_GET['code'], $_GET['name'], $_GET['price'], $riedidlo,  $_GET['id_measurement']);
+                            $cs->create($_GET['code'], $_GET['name'], $_GET['price'], $_GET['color_type'],  $_GET['id_measurement']);
                             $data = array( "err" => 0, "msg" => $createMsg );
 			break;
                     
@@ -279,7 +277,7 @@
                         case 24 : 
                             $cs = new ColorService($conn);
                             $d = $cs->recievById($_GET['id']);
-                            $data = array( "err" => 0, "price" => floatval($d[0]['price']), "unit" => $d[0]['unit'],"riedidlo" => $d[0]['riedidlo'] );    
+                            $data = array( "err" => 0, "price" => floatval($d[0]['price']), "unit" => $d[0]['unit'],"riedidlo" => $d[0]['color_type'] );    
                         break;
                         // zisti cenu produktu, na zakladne dnej sa pocita percentualny zisk
                         case 25 : 

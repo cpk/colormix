@@ -3,7 +3,7 @@
     <div class="tcontent">
         <form id="new-recipe">
             <div class="i">
-                    <label>Kód:</label>
+                    <label>Kód/Odtieň:</label>
                     <input maxlength="10" type="text" class="w100 required" name="code"/>
             </div>
             <div class="i odd">

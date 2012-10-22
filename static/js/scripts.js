@@ -385,7 +385,7 @@ $(function() {
                         if(price !== undefined)
                             price.val(json.price);
                         unit.text(json.unit);
-                        if(json.riedidlo == 1){
+                        if(json.riedidlo != 1){
                             label.text('Dávka celkovo:');
                         }else{
                             label.text('Dávka na 1kg:');    

@@ -42,7 +42,7 @@ class OrderRecipePresenter {
  
     
     private function getItemsTableHead(){
-        return '<thead><tr><th>Kód</th><th>Názov</th>'.
+        return '<thead><tr><th>Odtien</th><th>Názov</th>'.
               // '<th>Jednotka</th>'.
                '<th>Dávka celkovo</th>'.
                '<th class="il text-quantity_kg required">Dávka / 1kg</th>'.
@@ -55,7 +55,7 @@ class OrderRecipePresenter {
     
     
     private function formatPrice($price){
-        return number_format(round($price, 2),2);
+        return number_format(round($price, 2),2,","," ");
     }
     
     private function getRecipeItemTableRow($row){
@@ -63,11 +63,11 @@ class OrderRecipePresenter {
                 '<td class="c">'.$row["code"].'</td>'.
                 '<td>'.$row["name"].'</td>'.
                // '<td class="c">'.$row["unit"].'</td>'.
-                '<td class="r"><b>'.floatval($row['riedidlo']== 1 ? $row["quantity_kg"] : ($row["quantity"] * $row["quantity_kg"])).' '.$row["unit"].'</b></td>'.
-                '<td class="r il">'.floatval($row["quantity_kg"]).' '.$row["unit"].'</td>'.
-                '<td class="r il hide">'.floatval($row["price"]).' '.$this->priceUnit.'/'.$row["unit"].'</td>'.
+                '<td class="r"><b>'.$this->replaceDot(floatval($row['color_type']== 1 ? ($row["quantity"] * $row["quantity_kg"]) : $row["quantity_kg"])).' '.$row["unit"].'</b></td>'.
+                '<td class="r il">'.$this->replaceDot(floatval($row["quantity_kg"])).' '.$row["unit"].'</td>'.
+                '<td class="r il hide">'. $this->replaceDot(floatval($row["price"])).' '.$this->priceUnit.'/'.$row["unit"].'</td>'.
                 '<td class="r">'.$this->formatPrice($row["price"] * $row["quantity_kg"]).' '.$this->priceUnit.'</td>'.
-                '<td class="r">'.$this->formatPrice(($row['riedidlo']== 1 ? ($row["price"] * $row["quantity_kg"]) : ($row["quantity"] * $row["price"] * $row["quantity_kg"]))).' '.$this->priceUnit.'</td>'.
+                '<td class="r">'.$this->formatPrice(($row['color_type']== 1 ? ($row["quantity"] * $row["price"] * $row["quantity_kg"]) : ($row["price"] * $row["quantity_kg"]))).' '.$this->priceUnit.'</td>'.
                 '<td class="c w50 hide"><a class="edit" href="#id'.$row["id"].'">upraviť</a></td>'.
                 '<td class="c w50 hide"><a class="del4" href="#id'.$row["id"].'"></a></td>'.
                "</tr>";
@@ -83,7 +83,7 @@ class OrderRecipePresenter {
        $this->totalWeightGiven = $data[0]["quantity"];
        for($i=0 ; $i < count($data); $i++ ){
            
-           if($data[$i]["riedidlo"] == 1){
+           if($data[$i]["color_type"] != 1){
                $this->thinner +=  Converter::convert($data[$i]['id_unit'],$data[$i]['quantity_kg']);
                $this->totalPrice += $data[$i]['quantity_kg'] *  $data[$i]['price'];
            }else{
@@ -96,8 +96,11 @@ class OrderRecipePresenter {
        return  $html;
     }
     
-    
-    
+    private function replaceDot($val){
+        return str_replace(".", ",", $val);
+    }
+
+
     
     public function getTotalWeight(){
             $html = '<b>'.$this->getWeight() .' kg</b>';
@@ -107,10 +110,10 @@ class OrderRecipePresenter {
     } 
 
     public function getResume(){
-        return 'Cena nákup: <span>'.  number_format(round($this->totalPrice,2),2).' '.$this->priceUnit.'</span>'.
-               'Cena predaj: <span>'.  number_format(round($this->totalSalePrice,2),2).' '.$this->priceUnit.'</span>'.
+        return 'Cena nákup: <span>'.  $this->formatPrice(round($this->totalPrice,2)).' '.$this->priceUnit.'</span>'.
+               'Cena predaj: <span>'.  $this->formatPrice(round($this->totalSalePrice,2)).' '.$this->priceUnit.'</span>'.
                'Zisk: <span>'. $this->getProfit().'</span>'.
-               'Celková hmotnosť: <span>'.round($this->totalWeight,4).' kg</span>';
+               'Celková hmotnosť: <span>'.$this->replaceDot(round($this->totalWeight,2)).' kg</span>';
     }
     
     public function getProfit(){

@@ -68,9 +68,9 @@ class ColorPresenter{
                        <span>'.$this->priceUnit.'</span>   
                 </div>
                 <div class="i odd">
-                    <label>Riedidlo/obal:</label><input '.
-                               (isset($data[0]["riedidlo"]) && $data[0]["riedidlo"] == 1 ? 'checked="checked"' : "").'" 
-                                type="checkbox" name="riedidlo" /><span>Nebude sa prepočítavať celkovou hmotnosťou</span>
+                    <label>Typ materiálu: </label><select class="w300" name="color_type">'.
+                            getOptions( $this->conn, "color_type", "type_name", ($colorId == 0 ? 0 : $data[0]["color_type"])).'
+                        </select>
                 </div>
                  <div class="i ">
                         <label>Jednotka: </label><select class="w100" name="id_measurement">'.

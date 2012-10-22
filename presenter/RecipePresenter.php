@@ -48,7 +48,7 @@ class RecipePresenter{
      
     private function getTableHead(){
         return '<tr>
-                    <th>Kód</th>
+                    <th>Odtieň</th>
                     <th>Názov tovaru</th>
                     <th>Cena 1'.$this->weightUnit.'/'.$this->priceUnit.'</th>
                     <th>Upraviť</th>
@@ -86,9 +86,9 @@ class RecipePresenter{
         return "<tr>".
                 '<td class="c">'.$row["code"].'</td>'.
                 '<td>'.$row["name"].'</td>'.
-                '<td class="r">'.floatval($row["price"]).' '.$this->priceUnit.'/'.$row["unit"].'</td>'.
-                '<td class="r il">'.floatval($row["quantity_kg"]).' '.$row["unit"].'</td>'.
-                '<td class="r">'.($row["price"] * $row["quantity_kg"]).' '.$this->priceUnit.'</td>'.
+                '<td class="r">'.  $this->formatPrice(floatval($row["price"])).'/'.$row["unit"].'</td>'.
+                '<td class="r il">'.  $this->replaceDot(floatval($row["quantity_kg"])).' '.$row["unit"].'</td>'.
+                '<td class="r">'.$this->formatPrice(($row["price"] * $row["quantity_kg"])).'</td>'.
                 '<td class="c w50"><a class="edit" href="#id'.$row["id"].'">upraviť</a></td>'.
                 '<td class="c w50"><a class="del2" href="#id'.$row["id"].'"></a></td>'.
                "</tr>";
@@ -108,15 +108,19 @@ class RecipePresenter{
 
 
     public function getResume(){
-        return ' Celková hmotnosť dávok <span>'.$this->totalWeight.' kg</span>'.
-               'Náklady na '.$this->totalWeight.' kg = <span>'.$this->totalPrice.' '.$this->priceUnit.'</span>';
+        return ' Celková hmotnosť dávok <span>'.$this->replaceDot($this->totalWeight).' kg</span>'.
+               'Náklady na '.$this->replaceDot($this->totalWeight).' kg = <span>'.$this->formatPrice($this->totalPrice).'</span>';
     }
     
     /* ------------------------------------------------------ */
     
-   
+     private function replaceDot($val){
+        return str_replace(".", ",", $val);
+    }
     
-    
+    private function formatPrice($price){
+        return number_format(round($price, 2),2,","," ").' '.$this->priceUnit;
+    }
     
     public function createNavigator($pageNumber, $peerPage){
         $nav = new Navigator( $this->recipeService->getCountOfAllProducts($_GET['q']) , $pageNumber , 
@@ -134,7 +138,7 @@ class RecipePresenter{
         return '
         <form class="ajaxSubmit"> 
                 <div class="i ">
-                    <label><em>*</em>Kód pigmentu:</label><input value="'.
+                    <label><em>*</em>Odtieň:</label><input value="'.
                 ($colorId == 0 ?  $data[0]["code"] : "").'" 
                         maxlength="10" type="text" class="w100 required" name="code"/>
                 </div> 	

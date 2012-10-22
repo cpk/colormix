@@ -6,29 +6,38 @@
     function printOptionOrders(){
         if(!isset($_GET['orderBy']))
             return '<option value="0">-- Zoradiť podľa -- </option><option value="1">Odberateľa A-Z</option>'.
-                    '<option value="2">Odberateľa Z-A</option><option value="3">Najnovšej</option>'.
-                    '<option value="4">Najstaršej</option>';
+                    '<option value="2">Odberateľa Z-A</option><option value="3">Dátumu obj - najnovšej</option>'.
+                    '<option value="4">Dátumu obj - najstaršej</option><option value="5">Pridania - od najnovších</option><option value="6">Pridania - od najstarších</option>';
         switch ((int)$_GET['orderBy']){
             case 0 : 
                 return '<option value="0">-- Zoradiť podľa -- </option><option value="1">Odberateľa A-Z</option>'.
-                    '<option value="2">Odberateľa Z-A</option><option value="3">Najnovšej</option>'.
-                    '<option value="4">Najstaršej</option>';
+                    '<option value="2">Odberateľa Z-A</option><option value="3">Dátumu obj - najnovšej</option>'.
+                    '<option value="4">Dátumu obj - najstaršej</option><option value="5">Pridania - od najnovších</option><option value="6">Pridania - od najstarších</option>';
             case 1 : 
                 return '<option value="1">Odberateľa A-Z</option><option value="0">-- Zoradiť podľa -- </option>'.
-                    '<option value="2">Odberateľa Z-A</option><option value="3">Najnovšej</option>'.
-                    '<option value="4">Najstaršej</option>';
+                    '<option value="2">Odberateľa Z-A</option><option value="3">Dátumu obj - najnovšej</option>'.
+                    '<option value="4">Dátumu obj - najstaršej</option><option value="5">Pridania - od najnovších</option><option value="6">Pridania - od najstarších</option>';
             case 2 : 
                 return '<option value="2">Odberateľa Z-A</option><option value="0">-- Zoradiť podľa -- </option>'.
-                    '<option value="1">Odberateľa A-Z</option><option value="3">Najnovšej</option>'.
-                    '<option value="4">Najstaršej</option>';
+                    '<option value="1">Odberateľa A-Z</option><option value="3">Dátumu obj - najnovšej</option>'.
+                    '<option value="4">Dátumu obj - najstaršej</option><option value="5">Pridania - od najnovších</option><option value="6">Pridania - od najstarších</option>';
             case 3 : 
-                return '<option value="3">Najnovšej</option><option value="0">-- Zoradiť podľa -- </option>'.
+                return '<option value="3">Dátumu obj - najnovšej</option><option value="0">-- Zoradiť podľa -- </option>'.
                         '<option value="1">Odberateľa A-Z</option><option value="2">Odberateľa Z-A</option>'.
-                    '<option value="4">Najstaršej</option>';
+                    '<option value="4">Dátumu obj - najstaršej</option><option value="5">Pridania - od najnovších</option><option value="6">Pridania - od najstarších</option>';
             case 4 : 
-                return '<option value="4">Najstaršej</option><option value="0">-- Zoradiť podľa -- </option>'.
+                return '<option value="4">Dátumu obj - najstaršej</option><option value="0">-- Zoradiť podľa -- </option>'.
                         '<option value="1">Odberateľa A-Z</option><option value="2">Odberateľa Z-A</option>'.
-                        '<option value="3">Najnovšej</option>';    
+                        '<option value="3">Dátumu obj - najnovšej</option><option value="5">Pridania - od najnovších</option><option value="6">Pridania - od najstarších</option>';   
+            case 5 : 
+                return '<option value="5">Pridania - od najnovších</option><option value="0">-- Zoradiť podľa -- </option>'.
+                        '<option value="1">Odberateľa A-Z</option><option value="2">Odberateľa Z-A</option>'.
+                        '<option value="3">Dátumu obj - najnovšej</option><option value="4">Dátumu obj - najstaršej</option><option value="6">Pridania - od najstarších</option>'; 
+            case 6 : 
+                return '<option value="6">Pridania - od najstarších</option><option value="0">-- Zoradiť podľa -- </option>'.
+                        '<option value="1">Odberateľa A-Z</option><option value="2">Odberateľa Z-A</option>'.
+                        '<option value="3">Dátumu obj - najnovšej</option><option value="4">Dátumu obj - najstaršej</option><option value="5">Pridania - od najnovších</option>';      
+               
                
         }
     }

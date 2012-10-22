@@ -26,13 +26,13 @@ class OrderService {
                         (
                         coalesce((SELECT SUM(x.quantity_kg * x.price )
                         FROM  `order_item` z, `order_subitem` x
-                        JOIN `color` y ON y.id=x.id_color AND y.riedidlo=1
+                        JOIN `color` y ON y.id=x.id_color AND (y.color_type=2 OR y.color_type=3)
                         WHERE x.id_order=o.id AND z.id_order=x.id_order AND x.id_product=z.id_product),0)
 
                         + 
                         coalesce((SELECT SUM(x.quantity_kg * x.price * z.quantity )
                         FROM  `order_item` z, `order_subitem` x
-                        JOIN `color` y ON y.id=x.id_color AND y.riedidlo=0
+                        JOIN `color` y ON y.id=x.id_color AND y.color_type=1
                         WHERE x.id_order=o.id AND z.id_order=x.id_order AND x.id_product=z.id_product),0) 
 
                         + 
@@ -43,7 +43,7 @@ class OrderService {
                         coalesce((SELECT ROUND(coalesce(SUM(x.quantity_kg * z.price_sale),0),2)
                                            FROM  `order_item` z
                                              LEFT JOIN `order_subitem` x ON  x.id_product=z.id_product AND z.id_order=x.id_order
-                                            JOIN `color` y ON  y.id=x.id_color AND y.riedidlo=1 
+                                            JOIN `color` y ON  y.id=x.id_color AND (y.color_type=2 ) 
                                            WHERE o.id=z.id_order 
 
                         ),0)
@@ -63,7 +63,7 @@ class OrderService {
   (coalesce((SELECT coalesce(SUM(x.quantity_kg * x.price),0) * z.quantity
                        FROM  `order_item` z 
                         LEFT JOIN `order_subitem` x ON  x.id_product=z.id_product
-                        JOIN `color` y ON  y.id=x.id_color AND y.riedidlo=0 
+                        JOIN `color` y ON  y.id=x.id_color AND y.color_type=1 
                       
                        
     ),0)
@@ -71,7 +71,7 @@ class OrderService {
     coalesce((SELECT coalesce(SUM(x.quantity_kg * x.price),0)
                        FROM  `order_item` z  
                          LEFT JOIN `order_subitem` x ON  x.id_product=z.id_product
-                        JOIN `color` y ON  y.id=x.id_color AND y.riedidlo=1 
+                        JOIN `color` y ON  y.id=x.id_color AND (y.color_type=2 OR y.color_type=3)
                       
                        
     ),0)
@@ -83,7 +83,7 @@ class OrderService {
     coalesce((SELECT coalesce(SUM(x.quantity_kg * z.price_sale),0)
                        FROM  `order_item` z  
                          LEFT JOIN `order_subitem` x ON  x.id_product=z.id_product
-                        JOIN `color` y ON  y.id=x.id_color AND y.riedidlo=1 
+                        JOIN `color` y ON  y.id=x.id_color AND (y.color_type=2 OR y.color_type=3)
                        
                        
     ),0)
@@ -217,17 +217,21 @@ LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product` AND si.`id_order
     }
 
         public function orderBy(){
-        if(!isset($_GET['orderBy'])) $_GET['orderBy'] = 3;
+        if(!isset($_GET['orderBy'])) $_GET['orderBy'] = 5;
         switch ($_GET['orderBy']){
             case 1 :
                 return ' ORDER BY c.`name` ASC ';
             case 2 :
                 return ' ORDER BY c.`name` DESC';
-            case 0 :
             case 3 :
                 return ' ORDER BY o.`date` DESC ';
             case 4 :
                 return ' ORDER BY o.`date` ASC ';  
+            case 0 :
+            case 5 :
+                return ' ORDER BY o.`id` DESC ';
+            case 6 :
+                return ' ORDER BY o.`id` ASC ';    
              default : 
                  throw new Exception('Can not order data.');
         }
@@ -270,11 +274,11 @@ LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product` AND si.`id_order
                                         p.recipe,
                                         i.price,
                                         i.price_sale,
-                                            @tdq := ROUND((i.quantity + (SELECT coalesce(SUM(x.quantity_kg),0) FROM order_subitem x, color y WHERE y.id=x.id_color AND y.riedidlo=1 AND x.id_product=i.id_product AND x.id_order=i.id_order)),2) as mnozstvo_spolu, 
+                                            @tdq := ROUND((i.quantity + (SELECT coalesce(SUM(x.quantity_kg),0) FROM order_subitem x, color y WHERE y.id=x.id_color AND y.color_type=1 AND x.id_product=i.id_product AND x.id_order=i.id_order)),2) as mnozstvo_spolu, 
                                             ROUND(@tdq  * i.price_sale ,2) as cena_spolu_predaj,
                                             @cena_tovar := ROUND(SUM(i.quantity * i.price),2) as cena_tovar,
-                                            @pigmenty := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.riedidlo!=1 AND x.id_product=i.id_product  AND x.id_order=i.id_order) as pigments,
-                                            @riedidla := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.riedidlo=1 AND x.id_product=i.id_product  AND x.id_order=i.id_order) as riedidla,
+                                            @pigmenty := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.color_type!=1 AND x.id_product=i.id_product  AND x.id_order=i.id_order) as pigments,
+                                            @riedidla := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.color_type=1 AND x.id_product=i.id_product  AND x.id_order=i.id_order) as riedidla,
                                             @cena_rcp := ROUND(@pigmenty * i.quantity + @riedidla,2) as cena_spolu_nakup,
                                             ROUND(@pigmenty + @riedidla,2) as jednotkova_cena_spolu_nakup
                                         FROM `order` o

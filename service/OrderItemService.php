@@ -86,11 +86,11 @@ class OrderItemService {
                                     p.code,
                                     p.label,
                                     p.recipe,
-                                    @tdq := ROUND((i.quantity + (SELECT coalesce(SUM(x.quantity_kg),0) FROM order_subitem x, color y WHERE y.id=x.id_color AND y.riedidlo=1 AND x.id_product=i.id_product AND x.id_order=i.id_order)),2) as mnozstvo_spolu, 
+                                    @tdq := ROUND((i.quantity + (SELECT coalesce(SUM(x.quantity_kg),0) FROM order_subitem x, color y WHERE y.id=x.id_color AND y.color_type=2 AND x.id_product=i.id_product AND x.id_order=i.id_order)),2) as mnozstvo_spolu, 
                                     ROUND(@tdq  * i.price_sale ,2) as cena_spolu_predaj,
                                     @cena_tovar := ROUND(SUM(i.quantity * i.price),2) as cena_tovar,
-                                    @pigmenty := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.riedidlo!=1 AND x.id_product=i.id_product AND x.id_order=i.id_order) as pigments,
-                                    @riedidla := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.riedidlo=1 AND x.id_product=i.id_product AND x.id_order=i.id_order) as riedidla,
+                                    @pigmenty := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.color_type=1 AND x.id_product=i.id_product AND x.id_order=i.id_order) as pigments,
+                                    @riedidla := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND (y.color_type=2 OR y.color_type=3) AND x.id_product=i.id_product AND x.id_order=i.id_order) as riedidla,
                                     @cena_rcp := ROUND(@pigmenty * i.quantity + @riedidla,2) as cena_spolu_nakup,
                                     ROUND(@pigmenty + @riedidla,2) as jednotkova_cena_spolu_nakup
                                 FROM
