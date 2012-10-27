@@ -69,17 +69,17 @@
         
         <?php echo $p->printOrders($_GET['s'], PEER_PAGE); ?>
         <div class="clear"></div>
-        <!-- 
+        
         <div id="stats-info">
             <p>Celková hodnota obejdnávok vyhovujúcim zadaným kritériam</p>
             
-            <span>Nákup: <?php //echo number_format(round($os->getTotalPrice(),2), 2); ?> €</span>
+            <span>Nákup: <?php echo number_format($os->getTotalPrice(), 2, ",", " "); ?> €</span>
             
-            <span>Predaj: <?php //echo number_format(round($os->getTotalSalePrice(),2), 2); ?> €</span>
+            <span>Predaj: <?php echo number_format($os->getTotalSalePrice(), 2, ",", " "); ?> €</span>
             
-            <span>Zisk: <?php //echo number_format(round($os->getTotalSalePrice() - $os->getTotalPrice(),2), 2); ?>€ / 
-                <?php //echo ($os->getTotalPrice() == 0 ? 0 : round((($os->getTotalSalePrice() - $os->getTotalPrice()) / $os->getTotalPrice()) * 100,2) )?>%</span>
+            <span>Zisk: <?php echo number_format(round($os->getTotalSalePrice() - $os->getTotalPrice(),2),2 , ",", " "); ?>€ / 
+                <?php echo ($os->getTotalPrice() == 0 ? 0 : round((($os->getTotalSalePrice() - $os->getTotalPrice()) / $os->getTotalPrice()) * 100,2) )?>%</span>
         </div>
-        -->
+        
     </div>
 </div>

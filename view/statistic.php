@@ -4,8 +4,8 @@
             ?>
             <div id="left" class="box">
                 <ul>
-                    <li><a <?php echo isCurrent("s1", $subpage)?> href="/index.php?p=statistic">TOP 10 odberateľov</a></li>
-                    <li><a <?php echo isCurrent("s2", $subpage)?> href="/index.php?p=statistic&amp;sp=s2">Mesačný pehľad za posledný rok</a></li>
+                    <li><a <?php echo isCurrent("s1", $subpage)?> href="/index.php?p=statistic">TOP 5 odberateľov</a></li>
+                    <li><a <?php echo isCurrent("s2", $subpage)?> href="/index.php?p=statistic&amp;sp=s2">Mesačný pehľad</a></li>
 
                 </ul>
     

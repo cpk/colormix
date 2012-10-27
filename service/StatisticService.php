@@ -24,32 +24,38 @@ class StatisticService {
     }
     
     
-    public function getTopCustomers($limit = 10){
-        return $this->conn->select("SELECT c.`name`,
-                                        SUM(i.`quantity` * i.`price`) +
-                                        SUM(i.`quantity` * si.`quantity_kg` * si.`price`)  as total_price
-                                    FROM `order` o
-                                    JOIN `customer` c ON o.`id_customer`=c.`id`
-                                    LEFT JOIN `order_item` i ON i.`id_order`= o.`id`
-                                    LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product`
-                                    GROUP BY c.`name`
-                                    ORDER BY total_price DESC
+    public function getTopCustomers($limit = 5){
+        return $this->conn->select("SELECT name, 
+                                            ROUND(SUM(spolu_nakup)) as spolu_nakup, 
+                                            ROUND(SUM(spolu_predaj)) as spolu_predaj 
+                                    FROM view_order
+                                    ".$this->where()."
+                                    GROUP BY name 
+                                    ORDER BY spolu_predaj DESC 
                                     LIMIT $limit");
     }
     
     
-    public function getMonthlyReportOfLastYear(){
-        return $this->conn->select("SELECT MONTHNAME(o.`date`) as m, YEAR(o.`date`) as y,
-                                    SUM(i.`quantity` * i.`price`) +
-                                    SUM(i.`quantity` * coalesce(si.`quantity_kg`,0) * coalesce(si.`price`,0)) as total_price
-                                    FROM `order` o
-                                    JOIN `customer` c ON o.`id_customer`=c.`id`
-                                    LEFT JOIN `order_item` i ON i.`id_order`= o.`id`
-                                    LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product`
-                                    WHERE o.`date` > DATE_SUB(NOW(), INTERVAL 1 YEAR)
-                                    GROUP BY YEAR(o.`date`), MONTH(o.`date`) ASC");
+    public function getMonthlyReport(){
+        return $this->conn->select("SELECT  MONTH(`date`) as m, 
+                                            YEAR(`date`) as y, 
+                                            ROUND(SUM(spolu_nakup)) as spolu_nakup, 
+                                            ROUND(SUM(spolu_predaj)) as spolu_predaj 
+                                    FROM view_order ".
+                                    $this->where().
+                                    " GROUP BY YEAR(`date`), MONTH(`date`) ASC");                   
     }
     
+    public function where(){
+        $where = array();
+        if(isset($_GET['dateFrom']) && strlen($_GET['dateFrom']) > 0) 
+            $where[] =  " `date` >='".$_GET['dateFrom']."' "; 
+         if(isset($_GET['dateTo']) && strlen($_GET['dateTo']) > 0) 
+            $where[] =  " `date` <='".$_GET['dateTo']."' "; 
+         if(isset($_GET['q']) && strlen($_GET['q']) > 0) 
+            $where[] =  " `name` LIKE '%".$_GET['q']."%' "; 
+         return (count($where) > 0 ? " WHERE " : "").implode(" AND ", $where);
+    }
     
 }
 

@@ -110,15 +110,15 @@ class OrderRecipePresenter {
     } 
 
     public function getResume(){
-        return 'Cena nákup: <span>'.  $this->formatPrice(round($this->totalPrice,2)).' '.$this->priceUnit.'</span>'.
+        return 'Cena nákup: <span id="priceTotal">'.  $this->formatPrice(round($this->totalPrice,2)).' '.$this->priceUnit.'</span>'.
                'Cena predaj: <span>'.  $this->formatPrice(round($this->totalSalePrice,2)).' '.$this->priceUnit.'</span>'.
-               'Zisk: <span>'. $this->getProfit().'</span>'.
+               'Zisk: <span id="profit">'. $this->getProfit().'</span>'.
                'Celková hmotnosť: <span>'.$this->replaceDot(round($this->totalWeight,2)).' kg</span>';
     }
     
-    public function getProfit(){
+    public function getProfit($addPercentageChar = true){
         if($this->totalSalePrice == 0) return "-";
-        return  round(((($this->totalSalePrice - $this->totalPrice) / $this->totalPrice) * 100),2). " %";
+        return  round(((($this->totalSalePrice - $this->totalPrice) / $this->totalPrice) * 100),2).($addPercentageChar ? " %" : '' ) ;
     }
     
     /**

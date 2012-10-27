@@ -58,45 +58,7 @@ class OrderService {
                     LEFT JOIN `order_item` i ON i.`id_order`= o.`id`
                     LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product` AND si.`id_order` = i.`id_order`';
     
-    
-   private  $sumQuery = 'SELECT 
-  (coalesce((SELECT coalesce(SUM(x.quantity_kg * x.price),0) * z.quantity
-                       FROM  `order_item` z 
-                        LEFT JOIN `order_subitem` x ON  x.id_product=z.id_product
-                        JOIN `color` y ON  y.id=x.id_color AND y.color_type=1 
-                      
-                       
-    ),0)
-     + 
-    coalesce((SELECT coalesce(SUM(x.quantity_kg * x.price),0)
-                       FROM  `order_item` z  
-                         LEFT JOIN `order_subitem` x ON  x.id_product=z.id_product
-                        JOIN `color` y ON  y.id=x.id_color AND (y.color_type=2 OR y.color_type=3)
-                      
-                       
-    ),0)
-    + 
-    coalesce((SELECT SUM(z.quantity * z.price) FROM `order_item`z  ),0)
-
-    ) as spolu_nakup, 
-  (
-    coalesce((SELECT coalesce(SUM(x.quantity_kg * z.price_sale),0)
-                       FROM  `order_item` z  
-                         LEFT JOIN `order_subitem` x ON  x.id_product=z.id_product
-                        JOIN `color` y ON  y.id=x.id_color AND (y.color_type=2 OR y.color_type=3)
-                       
-                       
-    ),0)
-    + 
-    (SELECT coalesce(SUM(z.quantity * z.price_sale),0) FROM `order_item`z)
-
-    ) as spolu_predaj 
-
-FROM `order` o
-JOIN `customer` c ON o.`id_customer`=c.`id`
-LEFT JOIN `user` u ON o.`id_user`=u.`id_user` 
-LEFT JOIN `order_item` i ON i.`id_order`= o.`id`
-LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product` AND si.`id_order` = i.`id_order`';
+ 
     
    
    public function __construct($conn) {
@@ -114,10 +76,10 @@ LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product` AND si.`id_order
         $offset = ($pageNumber == 1 ? 0 :  ($pageNumber * $peerPage) - $peerPage);
       
         
-        return  $this->conn->select( $this->q.$this->where()."
-                                     GROUP BY o.`id`".
-                                     $this->orderBy()."
-                                     LIMIT $offset,  $peerPage");
+        return  $this->conn->select( "SELECT * FROM view_order ".
+                                     $this->where()." ".
+                                     $this->orderBy()." ".
+                                     " LIMIT $offset,  $peerPage");
     }
     
     public function getOrderById($orderId){        
@@ -168,12 +130,7 @@ LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product` AND si.`id_order
 
     public function getCountOfAllOrders(){
         if($this->countOfItems == null){
-            $count =  $this->conn->select("SELECT count(*) 
-                                           FROM `order` o
-                                           JOIN `customer` c ON o.`id_customer`=c.`id` 
-                                           ".$this->where());
-            
-            
+            $count =  $this->conn->select("SELECT count(*) FROM view_order ".$this->where());
             $this->countOfItems = $count[0]["count(*)"];
         }
         return (int)$this->countOfItems;
@@ -210,8 +167,7 @@ LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product` AND si.`id_order
     
 
     private function initTotalsVals(){
-       // echo $this->sumQuery.$this->where()." LIMIT 1";
-        $r =  $this->conn->select($this->sumQuery.$this->where()." LIMIT 1");
+        $r =  $this->conn->select("select SUM(spolu_nakup) as spolu_nakup, SUM(spolu_predaj) as spolu_predaj from view_order ".$this->where());
         $this->totalPrice = $r[0]['spolu_nakup'];
         $this->totalSalePrice = $r[0]['spolu_predaj'];
     }
@@ -220,18 +176,18 @@ LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product` AND si.`id_order
         if(!isset($_GET['orderBy'])) $_GET['orderBy'] = 5;
         switch ($_GET['orderBy']){
             case 1 :
-                return ' ORDER BY c.`name` ASC ';
+                return ' ORDER BY `name` ASC ';
             case 2 :
-                return ' ORDER BY c.`name` DESC';
+                return ' ORDER BY `name` DESC';
             case 3 :
-                return ' ORDER BY o.`date` DESC ';
+                return ' ORDER BY `date` DESC ';
             case 4 :
-                return ' ORDER BY o.`date` ASC ';  
+                return ' ORDER BY `date` ASC ';  
             case 0 :
             case 5 :
-                return ' ORDER BY o.`id` DESC ';
+                return ' ORDER BY `id` DESC ';
             case 6 :
-                return ' ORDER BY o.`id` ASC ';    
+                return ' ORDER BY `id` ASC ';    
              default : 
                  throw new Exception('Can not order data.');
         }
@@ -241,11 +197,11 @@ LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product` AND si.`id_order
     public function where(){
         $where = array();
         if(isset($_GET['dateFrom']) && strlen($_GET['dateFrom']) > 0) 
-            $where[] =  " o.`date` >='".$_GET['dateFrom']."' "; 
+            $where[] =  " `date` >='".$_GET['dateFrom']."' "; 
          if(isset($_GET['dateTo']) && strlen($_GET['dateTo']) > 0) 
-            $where[] =  " o.`date` <='".$_GET['dateTo']."' "; 
+            $where[] =  " `date` <='".$_GET['dateTo']."' "; 
          if(isset($_GET['q']) && strlen($_GET['q']) > 0) 
-            $where[] =  " c.`name` LIKE '%".$_GET['q']."%' "; 
+            $where[] =  " `name` LIKE '%".$_GET['q']."%' "; 
          return (count($where) > 0 ? " WHERE " : "").implode(" AND ", $where);
     }
 

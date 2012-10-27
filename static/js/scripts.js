@@ -1,4 +1,7 @@
-var getUrl = './inc/ajax.get.php?cb=?';
+var getUrl = './inc/ajax.get.php?cb=?',
+    BAZA = 1,
+    RIEDIDLO = 2,
+    OBAL = 3;
 
 function isNumber(n) {return !isNaN(Number(n));}
 function createClasses(){$('tr:even').addClass('odd');} 
@@ -12,11 +15,126 @@ function showStatus(data){
 
 
 function renameArr(a){
-	var d = {};	
+	var d = {}, i;	
 	for (i in a) {
 		d[a[i].name] = a[i].value;
 	}
 	return d;
+}
+
+function validate(f){
+	var inputs = f.find('input.required, textarea.required'),
+	valid = true,
+
+	vldt = {
+		required : function(v,i) {return {r : !!v ,  msg : 'Nie sú výplnené povinné hodnoty'}},
+		email	 : function(v,i) {return {r : v.match( /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/ ), msg : 'Neplatná e-mailová adresa'}},
+		fiveplus : function(v,i) {return {r : v.length >= 5, msg : 'Hodnota musí mať min. 5 znakov'}},
+		numeric  : function(v,i) {return {r : !isNaN(v), msg : 'Hodnota '+v+' nie je číslo.'}},
+		unique   : function(v,i) {var d = {coll : i.attr("name"),id : $('input[name=id]').eq(0).val(),table : i.parents("form").eq(0).attr("name"),val:v,act : 21};
+			return {r : $.getCount(d), msg : 'Hodnota <strong>'+v+'</strong> sa už v databáze nachádza.'}
+		}
+	};
+	inputs.removeClass('formerr');
+	inputs.each(function(){
+		var input = $(this),
+			val = input.val(),
+			cls = input.attr("class").split(' '),i;
+
+		for(i in cls){
+			if(vldt.hasOwnProperty(cls[i])){
+				var res = vldt[cls[i]](val,input);
+				if(!res.r){
+					input.addClass('formerr');
+					showStatus({err : 1, msg : res.msg});
+					valid = false;
+				}
+			}
+		}
+	});
+	return valid;	
+}
+
+/*--------------------------------------------
+ *  Skryje input s novou cenu a nastavit checkbox na unchacked
+ */
+function setComputeBoxToDefault(){
+    if($('#newPriceSpan') !== undefined){
+        $('#newPriceSpan').addClass("hidden").prev().removeAttr("checked");
+    }
+}
+
+/**--------------------------------------------
+ * Zobraz box s chexboxom, v ktorom po zaskrtnuti sa rozpocitaju naklady na 
+ * polozku objednavky co ceny predaj/kg
+ */
+function showComputeBox(showBox){        
+    var box = $('.computeBox');
+    if(box !== undefined){
+        if(showBox){ 
+            box.show();
+        }else { 
+            box.hide();
+        }
+    }
+}
+
+
+/*--------------------------------------------
+ * Funkcia, ktora aktualizuje data v HTML elementoch.
+ * Je volana ako callBack na ajax
+ */
+function makeCangesAfterResponse(json){
+    //console.log(json);
+    if($('.tableitems') !== undefined){
+            $('.tableitems').html(json.data);}
+    if($('.totalPrice') !== undefined){
+            $('.totalPrice').html(json.totalPrice);}
+    if(json.total !== undefined && $('#total') !== undefined){
+            $('#total').html(json.total);}
+    if(json.price_sale !== undefined && $('input[name=price_sale]') !== undefined){
+            $('input[name=price_sale]').val(json.price_sale);}
+    if(json.totalWeight !== undefined && $('input[name=totalWeight]') !== undefined){
+            $('input[name=totalWeight]').val(json.totalWeight);}    
+    createClasses();
+}
+
+function divNums(cislo, delitel){
+    if(isNaN(cislo) || isNaN(delitel) || (cislo || delitel) === 0) { return 0; }
+   return (cislo / delitel);
+}
+
+/* --------------------------------------------
+ * Vypocita novu predajnu cenu za 1kg pri pridavani novej polozky receptury do objednavky,
+ * v pripae ak je zaskrtnuty checkbox " Rozpočítať náklady do ceny predaj / kg "
+ */
+function recomputePriceSale(){
+    var priceItem = parseFloat($('input[name=price]').val()),
+        itemQuantity = parseFloat($('input[name=quantity_kg]').val()),
+        materialType = parseFloat($('input[name=materialType]').val()),
+        totalWeight = parseFloat($("input[name=totalWeight]").val()),
+        priceSale = parseFloat($("#ercp input[name=price_sale]").val()),
+        priceTotal = parseFloat($.trim($("#priceTotal").text().replace("\u20ac","").replace(",","."))),
+        profit = parseFloat($.trim($("#profit").text().replace("%","")));
+        newPrice = priceSale;
+        profit = (profit !== 0 ? (1 + (profit / 100) ) : 1 );
+        if(materialType !== undefined && priceItem !== 0 && itemQuantity !== 0 && !isNaN(itemQuantity) && !isNaN(priceItem)){
+            switch(materialType){
+                case BAZA :
+                case OBAL :
+                     newPrice = profit * ((itemQuantity * priceItem) + divNums(priceTotal, totalWeight));
+                     break;
+                case RIEDIDLO :
+                     newPrice = ((priceItem || totalWeight === 0) ? 
+                         priceSale : 
+                         divNums((priceTotal + (priceItem * itemQuantity)) * profit, (totalWeight + itemQuantity)));                  
+                     break;
+                default:
+                    showStatus({err : 1, msg : 'Neznámy typ materiálu.'});
+                    return;
+            }
+        }
+        $("input[name=new_price_sale]").val(Math.round(newPrice*100) / 100);
 }
 
 
@@ -42,43 +160,9 @@ function request(form){
 					$(form).find('input[type=text], textarea').val('');
 				}
 			}
-			if(json.msg.length > 0)	showStatus(json); 
+			if(json.msg.length > 0){ showStatus(json);} 
 		}); 
 		return false;
-}
-
-
-function validate(f){
-	var inputs = f.find('input.required, textarea.required'),
-	valid = true,
-
-	vldt = {
-		required : function(v,i) {return {r : !!v ,  msg : 'Nie sú výplnené povinné hodnoty'}},
-		email	 : function(v,i) {return {r : v.match( /^([\w-\.]+@([\w-]+\.)+[\w-]{2,4})?$/ ), msg : 'Neplatná e-mailová adresa'}},
-		fiveplus : function(v,i) {return {r : v.length >= 5, msg : 'Hodnota musí mať min. 5 znakov'}},
-		numeric  : function(v,i) {return {r : !isNaN(v), msg : 'Hodnota '+v+' nie je číslo.'}},
-		unique   : function(v,i) {var d = {coll : i.attr("name"),id : $('input[name=id]').eq(0).val(),table : i.parents("form").eq(0).attr("name"),val:v,act : 21};
-			return {r : $.getCount(d), msg : 'Hodnota <strong>'+v+'</strong> sa už v databáze nachádza.'}
-		}
-	};
-	inputs.removeClass('formerr');
-	inputs.each(function(){
-		var input = $(this),
-			val = input.val(),
-			cls = input.attr("class").split(' ');
-
-		for(i in cls){
-			if(vldt.hasOwnProperty(cls[i])){
-				var res = vldt[cls[i]](val,input);
-				if(!res.r){
-					input.addClass('formerr');
-					showStatus({err : 1, msg : res.msg});
-					valid = false;
-				}
-			}
-		}
-	});
-	return valid;	
 }
 
 function getProductPrice(id){
@@ -108,10 +192,10 @@ jQuery.fn.center = function () {
     this.css("top", (($(window).height() - this.outerHeight()) / 2) + $(window).scrollTop() + "px");
     this.css("left", (($(window).width() - this.outerWidth()) / 2) + $(window).scrollLeft() + "px");
     return this;
-}
+};
 
 $(function() {
-	$('.ajaxSubmit').submit(function (){request($(this));return false;})
+	$('.ajaxSubmit').submit(function (){request($(this));return false;});
 	createClasses();
         // Datepicker ------------------------------------------------------
         $('#note .inactive').click(function(){
@@ -120,13 +204,26 @@ $(function() {
         
        initDate();
         
+        $("#recipe-item-order input").not('input[name=new_price_sale]').keyup(function(){recomputePriceSale();});
+                
+        // v rezepture objednavky, pri pridavani novej polozky
+        $('.computeBox input[name=calculate]').change(function(){
+           var checkBoxes = $(this);
+           //console.log(checkBoxes.is(':checked'));
+           if(checkBoxes.is(':checked')){
+               checkBoxes.next().removeClass("hidden");
+               recomputePriceSale();
+           }else{
+               checkBoxes.next().addClass("hidden");
+           }
+        });
         
         // Vypocita percentualny zisk v polozke objednavky
-        $('input[name=profit]').change(function(){
+        $('input[name=profit]').keyup(function(){
             var priceNakup = parseFloat($('#recipePrice').text()),
                 priceInput = $('input[name=price_sale]'),
                 percProfit = parseFloat($(this).val());
-            if(priceNakup === '-') return;
+            if($(this).val().length === 0 || isNaN(priceNakup)) { priceInput.val(''); return; }
             if(percProfit === 0){
                 priceInput.val(priceNakup);
             }else{
@@ -136,11 +233,11 @@ $(function() {
         });
         
         // Vypocita percentualny zisk v polozke objednavky
-        $('input[name=price_sale]').change(function(){
+        $('input[name=price_sale]').keyup(function(){
             var priceNakup = parseFloat($('#recipePrice').text()),
                 profitInput = $('input[name=profit]'),
                 priceSale = parseFloat($(this).val());
-            if(priceNakup === '-') return;
+            if($(this).val().length === 0 || isNaN(priceNakup)){ profitInput.val(''); return;}
             if(priceNakup === priceSale){
                 profitInput.val(0);
             }else{
@@ -174,7 +271,7 @@ $(function() {
         $('#dt').click(function(){
             $(this).parent().html('<input maxlength="10" type="text" class="w100 date required" name="date"/>&nbsp;<input type="submit" class="ibtn-sm" value="Ulož" /> ');
              initDate();
-        })
+        });
         
         // AUTOCOMPLETE customer --------------------------------------------------
 	$( "input[name=q]" ).autocomplete({
@@ -222,26 +319,24 @@ $(function() {
             }
             $('.inline').addClass('exe');
             $.getJSON(getUrl, data, function(json) {  
-                if(json.err == 0){
+                if(json.err === 0){
                      if(json.totalPrice !== undefined){ 
-                        $('.tableitems').html(json.data);
-                        $('.totalPrice').html(json.totalPrice);
+                        makeCangesAfterResponse(json);
                          $('.inline').removeClass('exe');
                     }
                 }
-                createClasses();
             });
         return false;
-	})
+	});
         
          // pridanie novej objednavky --------------------------------------------
         $('#new-order').submit( function(e) {
             var data = renameArr($(this).serializeArray());
                 $.getJSON(getUrl, data, function(json) {  
                     if(json.err === 0)
-                        location.href = 'index.php?p=order&sp=edit&id=' + json.id;
+                        { location.href = 'index.php?p=order&sp=edit&id=' + json.id; }
                     else
-                        showStatus(json);
+                        { showStatus(json);}
                 });
                return false;
             });
@@ -259,25 +354,22 @@ $(function() {
              
              $.getJSON(getUrl, data, function(json) {  
                     if(json.err === 0){
-                        $('.tableitems').html(json.data);
-                        $('.totalPrice').html(json.totalPrice);
+                        makeCangesAfterResponse(json);
                         $('input[type=text]').val('');
-                        createClasses();
                     }else{
                         showStatus(json);
                     }       
             });
-             
             return false;
         });   
         // pridanie novej receptury --------------------------------------------
         $('#new-recipe').submit( function() {
             var data = renameArr($(this).serializeArray());
-            if(!validate( $(this) ))return false;
+            if(!validate( $(this) )) { return false; }
                 $.getJSON(getUrl, data, function(json) {  
                     if(json.err === 0){
                         if(json.id !== undefined)
-                            location.href = 'index.php?p=recipe&sp=edit&id=' + json.id;
+                            { location.href = 'index.php?p=recipe&sp=edit&id=' + json.id;}
                         else{
                             $('input').val('');
                             showStatus(json);
@@ -301,10 +393,7 @@ $(function() {
              $('.inline').addClass('exe');
              $.getJSON(getUrl, data, function(json) {  
                     if(json.err === 0){
-                        $('.tableitems').html(json.data);
-                        $('.totalPrice').html(json.totalPrice);
-                        $('#total').html(json.total);
-                        createClasses();
+                        makeCangesAfterResponse(json);
                         $('.inline').removeClass('exe');
                     }else{
                         showStatus(json);
@@ -319,7 +408,7 @@ $(function() {
         /* pridanie novej polozky do receptury */
         $('#recipe-item').submit(function(){
              var data = renameArr( $(this).serializeArray() );
-             if(!validate( $(this) ))return false;
+             if(!validate( $(this) )){ return false;}
              data.quantity_kg = data.quantity_kg.replace(',', ".");
              if(data.id_color === "0"){
                  showStatus({'err' : 1 , 'msg' : 'Nie je vybraný materiál.'});
@@ -330,9 +419,7 @@ $(function() {
              }
              $.getJSON(getUrl, data, function(json) {  
                     if(json.err === 0){
-                        $('.tableitems').html(json.data);
-                        $('.totalPrice').html(json.totalPrice);
-                        createClasses();
+                        makeCangesAfterResponse(json);
                     }else{
                         showStatus(json);
                     }       
@@ -344,7 +431,7 @@ $(function() {
         /* pridanie novej polozky do receptury v Objednavke */
         $('#recipe-item-order').submit(function(){
              var data = renameArr( $(this).serializeArray() );
-             if(!validate( $(this) ))return false;
+             if(!validate( $(this) )){ return false;}
              data.quantity_kg = data.quantity_kg.replace(',', ".");
              data.price = data.price.replace(',', ".");
              if(data.id_color === "0"){
@@ -356,10 +443,8 @@ $(function() {
              }
              $.getJSON(getUrl, data, function(json) {  
                     if(json.err === 0){
-                        $('.tableitems').html(json.data);
-                        $('.totalPrice').html(json.totalPrice);
-                        $('#total').html(json.total);
-                        createClasses();
+                        makeCangesAfterResponse(json);
+                        setComputeBoxToDefault();
                     }else{
                         showStatus(json);
                     }       
@@ -373,23 +458,29 @@ $(function() {
            var id = $('select[name=id_color] option:selected').val(),
                price = $('input[name=price]'),
                unit = $('#unit'),
+               materialType = $('input[name=materialType]'),
                label = $('#label');
-           
+           setComputeBoxToDefault();
            if(id === 0){
-               if(price !== undefined)
+               if(price !== undefined){
                     price.val('');
+                }
                unit.text('');
+               showComputeBox(false);
            }else{
                 $.getJSON(getUrl, {act : 24, id : id }, function(json) {  
                     if(json.err === 0){
-                        if(price !== undefined)
+                        if(price !== undefined){
                             price.val(json.price);
+                        }
                         unit.text(json.unit);
-                        if(json.riedidlo != 1){
+                        showComputeBox(true);
+                        if(json.material_type != BAZA){
                             label.text('Dávka celkovo:');
                         }else{
-                            label.text('Dávka na 1kg:');    
+                            label.text('Dávka na 1kg:');
                         }
+                        if(materialType !== undefined){ materialType.val(json.material_type); }
                     }else{
                         showStatus(json);
                     }
@@ -410,14 +501,15 @@ $(function() {
                     return false;
             }
             $.getJSON(getUrl, data, function(json) {  
-                if(json.err === 0)
+                if(json.err === 0){
                     o.parent().parent().hide(1000);
-                else
+                }else{
                     showStatus(json);
+                }
                 createClasses();
             });
         return false;
-	})
+	});
          // MAZANIE POLOZKY RECEPTURY Z OBJENAVKY ---------------------------------------------------
 	$("table").delegate(".del4", 'click', function () {
             var o = $(this),
@@ -432,18 +524,15 @@ $(function() {
             }
             $('.inline').addClass('exe');
             $.getJSON(getUrl, data, function(json) {  
-                if(json.err == 0){
+                if(json.err === 0){
                      if(json.totalPrice !== undefined){ 
-                        $('.tableitems').html(json.data);
-                        $('.totalPrice').html(json.totalPrice);
-                        $('#total').html(json.total);
-                         $('.inline').removeClass('exe');
+                        makeCangesAfterResponse(json);
+                        $('.inline').removeClass('exe');
                     }
                 }
-                createClasses();
             });
         return false;
-	})
+	});
         
          // MAZANIE POLOZKY RECEPTURY ---------------------------------------------------
 	$("table").delegate(".del2", 'click', function () {
@@ -459,17 +548,15 @@ $(function() {
             }
             $('.inline').addClass('exe');
             $.getJSON(getUrl, data, function(json) {  
-                if(json.err == 0){
+                if(json.err === 0){
                      if(json.totalPrice !== undefined){ 
-                        $('.tableitems').html(json.data);
-                        $('.totalPrice').html(json.totalPrice);
+                        makeCangesAfterResponse(json);
                          $('.inline').removeClass('exe');
                     }
                 }
-                createClasses();
             });
         return false;
-	})
+	});
         
 	
 	// INLINE EDITING -----------------------------------------------------------
@@ -495,7 +582,7 @@ $(function() {
                 o.parent().append('<input type="submit" id="#iibtn" value="Uložiť" class="ibtn" />');
                 $('.inline .edit').hide();
         return false;
-	})
+	});
 	
 	$(".inlineEditing").submit( function () {
             var o = $(this),
@@ -513,11 +600,7 @@ $(function() {
                     return false;
                 }else{
                     if(json.totalPrice !== undefined){ 
-                        $('.tableitems').html(json.data);
-                        $('.totalPrice').html(json.totalPrice);
-                        if(json.total !== undefined)
-                            $('#total').html(json.total);
-                        createClasses();
+                       makeCangesAfterResponse(json);
                     }else{
                         tr.find('.ii').each(function(){
                         var input = $(this),
@@ -533,6 +616,6 @@ $(function() {
                 }
             });	
     return false;
-	})
+	});
 	
 });

@@ -194,7 +194,8 @@
                             $data = array( "err" => 0, 
                                             "data" => $rp->getTbodyOfTableItems($_GET['id'], $info[0]['id_order']),
                                             "totalPrice" => $rp->getResume(),
-                                            "total" => $rp->getTotalWeight());
+                                            "total" => $rp->getTotalWeight(),
+                                            "totalWeight" => $rp->getWeight());
 			break;
                     
                             /* inline editing v polozke objednavky */
@@ -219,20 +220,26 @@
                             $data = array( "err" => 0, 
                                             "data" => $rp->getTbodyOfTableItems($_GET['recepeId'], $info[0]['id_order']),
                                             "totalPrice" => $rp->getResume(),
-                                            "total" => $rp->getTotalWeight() );
+                                            "total" => $rp->getTotalWeight(),
+                                            "totalWeight" => $rp->getWeight());
 			break;
                     
                             /* Pridanie novej polozky receptury do obj. */
                            case 18 : 
                             $ors = new OrderRecipeService($conn);
                             $info = $ors->getRecipeInfo($_GET['id']);
-                            //              create($idProduct, $idColor, $price, $quantityKg, $orderId)
+                            if(isset($_GET['calculate']) && $_GET['calculate'] == "on"){
+                                $os = new OrderItemService($conn);
+                                $os->updateItemSalePrice($_GET['new_price_sale'], $_GET['id']);      
+                            }
                             $ors->create($info[0]['id'] , $_GET['id_color'], $_GET['price'], $_GET['quantity_kg'], $_GET['idOrder']);
                             $orp = new OrderRecipePresenter($conn, WEIGHT_UNIT, PRICE_UNIT, $ors ); 
                             $data = array( "err" => 0, 
                                             "data" => $orp->getTbodyOfTableItems($_GET['id'], $_GET['idOrder']),
                                             "totalPrice" => $orp->getResume(),
-                                            "total" => $orp->getTotalWeight() );
+                                            "total" => $orp->getTotalWeight(),
+                                            "price_sale" => $_GET['new_price_sale'],
+                                            "totalWeight" => $orp->getWeight());
 			break;
                            /* AUTOCOMPLETE customer */
                             case 19 : 
@@ -277,7 +284,7 @@
                         case 24 : 
                             $cs = new ColorService($conn);
                             $d = $cs->recievById($_GET['id']);
-                            $data = array( "err" => 0, "price" => floatval($d[0]['price']), "unit" => $d[0]['unit'],"riedidlo" => $d[0]['color_type'] );    
+                            $data = array( "err" => 0, "price" => floatval($d[0]['price']), "unit" => $d[0]['unit'],"material_type" => $d[0]['color_type'] );    
                         break;
                         // zisti cenu produktu, na zakladne dnej sa pocita percentualny zisk
                         case 25 : 

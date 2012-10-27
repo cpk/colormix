@@ -41,6 +41,11 @@ class OrderItemService {
         $this->checkQuantity($priceSale);
         $this->conn->update("UPDATE `order_item` SET `quantity`=?,`price_sale`=?  WHERE `id`=? LIMIT 1", array($quantity,$priceSale, $IdItem));
     }
+    
+    public function updateItemSalePrice($priceSale, $IdItem){
+        $this->checkQuantity($priceSale);
+        $this->conn->update("UPDATE `order_item` SET `price_sale`=?  WHERE `id`=? LIMIT 1", array($priceSale, $IdItem));
+    }
 
     
     public function delete($idItem){

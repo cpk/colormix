@@ -9,6 +9,8 @@
 .fixsize{width:120px;display:block;float:left;padding:13px 5px;text-align:right;}
 .ibtn-sm.flr{float:right;}
 
+.computeBox{margin-top:10px;padding:5px 0 0 0;border-top:2px solid #ddd;display: none;}
+
 .cstHead{background:#628299;color:#fff;padding:10px;font-size:14px;}
 #unit{ background:#EDFFF2;border:2px solid #C5EBCF;padding:5px 8px;margin-left:-5px;margin-right:5px;}
 .loginPage{width:500px;margin:auto;}
@@ -115,7 +117,7 @@ form.nostyle input{margin:0}
 
 .totalPrice{padding:15px 5px;background:#f9f9f9;border:5px solid #eee;font-size:17px;text-align:right;}
 .totalPrice span,#stats-info span{ background:#b54040;color:#fff;padding:7px 5px;border:2px solid #fff;margin: 0 5px; }
-.add-recipe{margin: 20px 0;}
+
 
 #loader{position:absolute;display: none;padding:10px 10px 10px 30px;background:#fff url(../img/loader.gif) no-repeat 5px center;font-size:11px;border:3px solid #B312B3;}
 .exe{background:url(../img/loader.gif) no-repeat center center;}

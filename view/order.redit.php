@@ -52,7 +52,7 @@
         
         
         <!-- ADDING FORM   ==========================  -->
-        
+        <strong class="add-product">Pridanie novej proložky do receptúry v objednávke</strong>
         <div class="add-recipe">
             <form id="recipe-item-order"> 
                 <select name="id_color" class="w400">
@@ -65,6 +65,17 @@
             <span>Cena za j.: </span>
             <input maxlength="10" type="text" class="w50 c required" name="price" />
             <input type="submit" class="ibtn-sm" value="Pridať" />
+            <div class="computeBox">
+                <span>&nbsp;&nbsp;Rozpočítať náklady do ceny <b>predaj / kg</b> a zachovať výšku zisku <span class="profit"></span>:</span>
+                <input type="checkbox" class="w50" name="calculate" />
+                &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;<span id="newPriceSpan" class="hidden">
+                <span class="margin-l">Nová cena predaj / kg po rozpočítaní </span>
+                <input type="text" name="new_price_sale" class="c w50" /><?php echo PRICE_UNIT; ?>
+                </span>
+            </div>
+            
+            <input type="hidden" name="totalWeight"  value="<?php echo $orp->getWeight(); ?>" />
+            <input type="hidden" name="materialType"  value="0" />
             <input type="hidden" name="act"  value="18" />
             <input type="hidden" name="idOrder"  value="<?php echo $data[0]['id_order']; ?>" />
             <input type="hidden" name="id"  value="<?php echo $_GET['id']; ?>" />
