@@ -37,8 +37,8 @@ table b{font-weight:normal;}
 
 /* POP UP STATUS DEF */
 #status{position:absolute;z-index:99999999;background:url(../img/s-bg.png);padding:40px;display:none;}
-#status p{padding:10px 10px 10px 40px; }
-#status .ok{border:4px solid #d5f0a9;color:#548015;background:#f7ffec url(../img/s-ok.png) no-repeat 5px center;}
+#status p, .ok{padding:10px 10px 10px 40px; }
+#status .ok,.ok{border:4px solid #d5f0a9;color:#548015;background:#f7ffec url(../img/s-ok.png) no-repeat 5px center;}
 #status .err{border:4px solid #fdd1d1;color:#b21d1d;background:#fff2f2 url(../img/s-err.png) no-repeat 5px center;}
 
 .radius,form .ibtn,.navigator a, .navigator span,.totalPrice span,form .ibtn-sm,#loader,.edit-rcp,#back,#stats-info span,#stats-info,.loginPage{-webkit-border-radius: 5px;-moz-border-radius: 5px;border-radius: 5px;}
@@ -80,6 +80,7 @@ section a:hover{text-decoration:none;}
 .tbox table a{ color:#d37511;text-decoration:underline;}
 .tbox table a:hover{ color:#df6e00;text-decoration:none;}
 .tbox table .del,.tbox table .del2,.tbox table .del3,.tbox table .del4{ background:url(../img/del.png) no-repeat center center; height:20px;width:30px;margin:auto;display:block;}
+.tbox table .copyOrder{ background:url(../img/copy_20.png) no-repeat center center; height:20px;width:30px;margin:auto;display:block;}
 .tbox table tbody tr:hover{ background:#fff6eb !important;}
 .tbox table tr.odd{ background:#f9f9f9;}
 .tbox table tr .recipe{background:url(../img/r.png) no-repeat right center;}
@@ -148,7 +149,7 @@ h1{font-size: 15px;padding:5px;border-bottom:1px solid #ccc;margin-top:15px;}
 .filter input,.filter select{padding:4px;border:1px solid #888; }
 .filter select{ padding:2px 1px 1px 0;font-size:11px;margin:0;float:left;margin:7px 5px ;}
 #note{padding:0;border:2px solid #eee;margin:10px 5px;float: right;}
-#note textarea{width:690px;float:left;}
+#note textarea{width:550px;float:left;}
 #note .inactive{color:#999;height:20px;}
 .date{background:#fff url(../img/cal.png) no-repeat 80px center; width:90px;}
 
@@ -156,6 +157,7 @@ h1{font-size: 15px;padding:5px;border-bottom:1px solid #ccc;margin-top:15px;}
 #stats-info span{font-size:14px;margin:5px 10px auto;display:block;}
 
 #print{background:url(../img/print.png) no-repeat 0 0;padding:8px 5px 7px 40px;height:20px;position:absolute;top:8px;left:120px;color:#000;text-decoration:none;}
-#print:hover{opacity:.7;}
-#printBox{position:relative !important;}
-#printBox #print{top:20px;left:0px;}
+#copy{background:url(../img/copy.png) no-repeat 0 0;padding:8px 5px 7px 40px;height:20px;position:absolute;top:20px;left:120px;color:#000;text-decoration:none;}
+#print:hover,#copy:hover{opacity:.7;}
+#printBox{position:relative !important;min-width:950px;}
+#printBox #print{top:20px;left:10px;}

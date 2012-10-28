@@ -8,6 +8,31 @@
     <strong>Editácia objednávky: <b><?php echo $_GET['id']; ?></b></strong>
     <div class="tcontent">
         
+        <?php 
+            if(isset($_GET['copy']) && $_GET['copy'] == 1){
+                echo '<p class="ok">Objednávka je úspešne duplikovaná, nezabudnite zmeniť dátum objednávky.</p>';
+            }
+        ?>
+        
+         <!-- Poznamka ========================== -->
+        <div id="printBox">
+        <a id="print" target="_blank" href="/index.php?p=print&amp;doc=order&amp;id=<?php echo $_GET['id']; ?>" title="Vytlačiť">Vytlačiť</a>
+        <a id="copy" class="copyOrder"  href="#<?php echo $_GET['id']; ?>" title="Kopírovať">Duplikovať objednávku</a>
+        <form class="ajaxSubmit " id="note">
+            <?php
+                if(strlen(($order[0]['label'])) == 0 || $order[0]['label']== "Poznámka k objednávke...") 
+                   echo ' <textarea name="label" class="inactive">Poznámka k objednávke...</textarea>';
+                else
+                   echo ' <textarea name="label">'.$order[0]['label'].'</textarea>';
+            ?>
+            <input type="hidden" name="act" value="22" />
+            <input type="hidden" name="id" value="<?php echo $_GET['id']; ?>" />
+            <input type="submit" class="ibtn-sm" value="Uložiť" />
+            <div class="clear"></div>
+        </form>
+         <div class="clear"></div>
+        </div>
+        
         <!-- TABULKY OBEJDNAVKY ========================== -->
         <form class="ajaxSubmit nostyle">
         <table class="cst">
@@ -51,23 +76,7 @@
         <div class="clear"></div>
         
         
-        <!-- Poznamka ========================== -->
-        <div id="printBox">
-        <a id="print" target="_blank" href="/index.php?p=print&amp;doc=order&amp;id=<?php echo $_GET['id']; ?>" title="Vytlačiť">Vytlačiť</a>
-        <form class="ajaxSubmit " id="note">
-            <?php
-                if(strlen(($order[0]['label'])) == 0 || $order[0]['label']== "Poznámka k objednávke...") 
-                   echo ' <textarea name="label" class="inactive">Poznámka k objednávke...</textarea>';
-                else
-                   echo ' <textarea name="label">'.$order[0]['label'].'</textarea>';
-            ?>
-            <input type="hidden" name="act" value="22" />
-            <input type="hidden" name="id" value="<?php echo $_GET['id']; ?>" />
-            <input type="submit" class="ibtn-sm" value="Uložiť" />
-            <div class="clear"></div>
-        </form>
-         <div class="clear"></div>
-        </div>
+       
         
         <!-- POLOZKY OBEJDNAVKY ========================== -->
         

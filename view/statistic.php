@@ -6,7 +6,7 @@
                 <ul>
                     <li><a <?php echo isCurrent("s1", $subpage)?> href="/index.php?p=statistic">TOP 5 odberateľov</a></li>
                     <li><a <?php echo isCurrent("s2", $subpage)?> href="/index.php?p=statistic&amp;sp=s2">Mesačný pehľad</a></li>
-
+                   <!-- <li><a <?php echo isCurrent("s3", $subpage)?> href="/index.php?p=statistic&amp;sp=s3">Štatistika tovaru</a></li> -->
                 </ul>
     
     
@@ -21,6 +21,9 @@
                     break;
                 case "s2" : 
                         include_once BASE_DIR."/view/statistic.s2.php";
+                    break;
+                case "s3" : 
+                        include_once BASE_DIR."/view/statistic.s3.php";
                     break;
 
                 default : 

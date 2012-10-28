@@ -246,7 +246,19 @@ $(function() {
             }
         });
         
-        
+        // Duplikuje / skopiruje objednavku
+        $('.copyOrder').click(function(){
+            var orderId = $(this).attr("href").replace('#', '');
+            if(isNaN(orderId)){
+                 showStatus({'err' : 1 , 'msg' : 'Nie je možné duplikovať objednávku.'}); return;
+            }
+            $.getJSON(getUrl, { act: 26, orderId : orderId }, function(json) {  
+                    if(json.err === 0)
+                        { location.href = 'index.php?p=order&sp=edit&copy=1&id=' + json.newOrderId; }
+                    else
+                        { showStatus(json);}
+                });  
+        });
         
         // AUTOCOMPLETE product --------------------------------------------------
 	$( "#p" ).autocomplete({
@@ -268,9 +280,10 @@ $(function() {
             }
 	});
         
+        // Zmena datumu objednavky
         $('#dt').click(function(){
             $(this).parent().html('<input maxlength="10" type="text" class="w100 date required" name="date"/>&nbsp;<input type="submit" class="ibtn-sm" value="Ulož" /> ');
-             initDate();
+             initDate();return false;
         });
         
         // AUTOCOMPLETE customer --------------------------------------------------

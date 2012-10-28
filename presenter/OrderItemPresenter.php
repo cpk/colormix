@@ -71,7 +71,7 @@ class OrderItemPresenter {
                 '<td class="r">'.$this->formatPrice($row["cena_spolu_nakup"] + $row["cena_tovar"]).'</td>'.
                 '<td class="r il">'.$this->formatPrice($row["price_sale"]).'</td>'.
                 '<td class="r">'.$this->formatPrice($row["cena_spolu_predaj"]).'</td>'.
-                '<td class="r">'.round((($row["price_sale"] - $itemPrice) / $itemPrice)*100,2 ).' %</td>'.
+                '<td class="r">'.$this->getProfit($itemPrice, $row["price_sale"]).' %</td>'.
                 '<td class="c w50 hide"><a class="edit" href="#id'.$row["id"].'">upraviť</a></td>'.
                 '<td class="c w50 hide"><a class="del3" href="#id'.$row["id"].'"></a></td>'.
                "</tr>";
@@ -102,16 +102,16 @@ class OrderItemPresenter {
         return $this->saleTotalPrice;
     }
     
-    public function getProfit(){
-        if($this->totalPrice == 0) return 0;
-        return round((($this->saleTotalPrice - $this->totalPrice) / $this->totalPrice) * 100, 2)." %";
+    public function getProfit($nakup, $predaj){
+        if($predaj == 0   || $nakup == 0  ) return "0";
+        return  round(((($predaj - $nakup) / $nakup) * 100),2). " %";
     }
-    
+        
     
       public function getResume($priceUnit){
         return  'Celková cena nákup: <span>'.$this->formatPrice($this->getTotalPrice()).'</span>'.
                 'Celková cena predaj: <span>'.$this->formatPrice($this->getSaleTotalPrice()).'</span>'.
-                'Zisk: <span>'.$this->getProfit().'</span>';
+                'Zisk: <span>'.$this->getProfit($this->totalPrice, $this->saleTotalPrice).'</span>';
 }
     
     

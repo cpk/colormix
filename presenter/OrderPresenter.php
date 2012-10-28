@@ -55,6 +55,7 @@ class OrderPresenter {
                     <th>Zisk</th>
                     <th>Zaevidoval</th>
                     <th>Upraviť</th>
+                    <th>Duplik.</th>
                     <th>Zmazať</th>
                 </tr>';
     }
@@ -69,7 +70,8 @@ class OrderPresenter {
                 '<td class="r">'.  $this->getProfit($row["spolu_nakup"], $row["spolu_predaj"]).'</td>'.
                 '<td class="c">'.$row["givenname"].' '.substr($row["surname"], 0, 1).'. </td>'.
                 '<td class="c w50"><a class="edit" href="./index.php?p=order&amp;sp=edit&amp;id='.$row["id"].'">upraviť</a></td>'.
-                '<td class="c w50"><a class="del" href="#id'.$row["id"].'"></a></td>'.
+                '<td class="c"><a title="Duplikovať objednávku" class="copyOrder" href="#'.$row["id"].'"></a></td>'.
+                '<td class="c"><a title="Zmazať objednávku" class="del" href="#id'.$row["id"].'"></a></td>'.
                "</tr>";
     }
     
@@ -82,7 +84,7 @@ class OrderPresenter {
     
   
      public function getProfit($nakup, $predaj){
-        if($predaj == 0) return "-";
+        if($predaj == 0  || $nakup == 0  ) return "0";
         return  round(((($predaj - $nakup) / $nakup) * 100),2). " %";
     }
 

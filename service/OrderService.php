@@ -221,7 +221,31 @@ class OrderService {
         }
     }
     
+    public function copyOrder($orderId){
+        
+        $order = $this->conn->select("SELECT * FROM `order` WHERE `id`=? LIMIT 1", array($orderId));
+        
+        if($order == null || count($order) == 0){
+            throw new ValidationException("Objednávku sa nepodarilo skopírovať.");
+        }
+        
+        $this->create($order[0]['id_customer'], date("Y-m-d"), $order[0]['label']);
+        $newOrderId = $this->getInsertId();
+        $this->conn->insert(
+                "INSERT INTO order_item (id_order, id_product, price, quantity, price_sale) ".
+                "SELECT $newOrderId, id_product, price, quantity, price_sale FROM order_item WHERE id_order=?",
+                array($orderId)
+                );
+        $this->conn->insert(
+                "INSERT INTO order_subitem (id_color, id_product, quantity_kg, price, id_order) ".
+                "SELECT id_color, id_product, quantity_kg, price,$newOrderId FROM order_subitem WHERE id_order=?",
+                array($orderId)
+                );
+        return $newOrderId;
+    }
+
     
+
     public function getOrdersByRecipieId($recipeId, $pageNumber , $peerPage){
         $offset = ($pageNumber == 1 ? 0 :  ($pageNumber * $peerPage) - $peerPage);
         return  $this->conn->select("SELECT o.`id`, o.`date`, c.`name`,  c.`id` as id_customer,

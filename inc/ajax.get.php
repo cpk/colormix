@@ -238,8 +238,9 @@
                                             "data" => $orp->getTbodyOfTableItems($_GET['id'], $_GET['idOrder']),
                                             "totalPrice" => $orp->getResume(),
                                             "total" => $orp->getTotalWeight(),
-                                            "price_sale" => $_GET['new_price_sale'],
                                             "totalWeight" => $orp->getWeight());
+                            if(isset($_GET['calculate']) && $_GET['calculate'] == "on")
+                                                $data["price_sale"] = $_GET['new_price_sale'];
 			break;
                            /* AUTOCOMPLETE customer */
                             case 19 : 
@@ -291,6 +292,12 @@
                             $rs = new RecipeService($conn); 
                             $data = array( "err" => 0, "msg" => "", "price" => $rs->getProductPrice($_GET['id']));
                         break;
+                       // skopiruje objednavku
+                        case 26 : 
+                            $os = new OrderService($conn);
+                            $newOrderId = $os->copyOrder($_GET['orderId']);
+                            $data = array( "err" => 0, "msg" => "", "newOrderId" => $newOrderId);
+                        break;
                      
 		}
         }catch(ValidationException $e){
@@ -298,6 +305,7 @@
 	}catch(MysqlException $e){
                 $data = array( "err" => 1, "msg" => "Vyskytol sa problém s databázou, operáciu skúste zopakovať" );    
 	}
+        
         
        // if(isset($data['msg'])) $data['msg'] = utf8_encode($data['msg']);
         echo $_GET["cb"] . "(" .json_encode( $data ) . ")";
