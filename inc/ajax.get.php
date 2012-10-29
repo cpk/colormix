@@ -20,6 +20,7 @@
         require_once  BASE_DIR."/presenter/RecipePresenter.php";
         require_once  BASE_DIR."/presenter/OrderItemPresenter.php";
         require_once  BASE_DIR."/presenter/OrderRecipePresenter.php";
+        require_once  BASE_DIR."/presenter/OrderByRecipePresenter.php";
         
         require_once  BASE_DIR."/service/ColorService.php";
         require_once  BASE_DIR."/service/RecipeService.php";
@@ -147,7 +148,8 @@
 			break;
                             /* AUTOCOMPLETE product */
                             case 12 : 
-                            $data = $conn->simpleQuery("SELECT `id`, `code`, `label` FROM `product` WHERE `label` LIKE '". $_GET["term"]."%' OR `code` LIKE '". $_GET["term"]."%' LIMIT 12");
+                            $data = $conn->simpleQuery("SELECT `id`, `code`, `label` FROM `product` WHERE `label` LIKE '". 
+                                            $_GET["term"]."%' OR `code` LIKE '". $_GET["term"]."%' ORDER BY `code` LIMIT 12");
                             if($data == null) $data = array();
                             echo  $_GET["cb"] . "(" . json_encode($data) . ")";  
                             exit;
@@ -297,6 +299,13 @@
                             $os = new OrderService($conn);
                             $newOrderId = $os->copyOrder($_GET['orderId']);
                             $data = array( "err" => 0, "msg" => "", "newOrderId" => $newOrderId);
+                        break;
+                        // zobrazi v objednavke 5 posledny objednavok daneho produktu
+                        case 27 : 
+                            $orp = new OrderByRecipePresenter($conn, WEIGHT_UNIT, PRICE_UNIT);
+                            $html = $orp->printOrderByProductAndCustomer($_GET['idProduct'], $_GET['idCustomer'], $_GET['idOrder']);
+                            if(!$html) $html = 0;
+                            $data = array( "err" => 0, "msg" => "", "html" => $html);
                         break;
                      
 		}

@@ -271,6 +271,32 @@ class OrderService {
                                         ORDER BY c.`name`, o.`date` DESC", array($recipeId)); 
     }
     
+    
+    public function getProductByIdPoductAndIdCustomer($idProduct, $idCustomer, $idOrder){
+        return  $this->conn->select("SELECT o.`id`, o.`date`, c.`name`,
+                                        p.code,
+                                        p.label,
+                                        p.recipe,
+                                        i.price,
+                                        i.price_sale,
+                                            @tdq := ROUND((i.quantity + (SELECT coalesce(SUM(x.quantity_kg),0) FROM order_subitem x, color y WHERE y.id=x.id_color AND y.color_type=1 AND x.id_product=i.id_product AND x.id_order=i.id_order)),2) as mnozstvo_spolu, 
+                                            ROUND(@tdq  * i.price_sale ,2) as cena_spolu_predaj,
+                                            @cena_tovar := ROUND(SUM(i.quantity * i.price),2) as cena_tovar,
+                                            @pigmenty := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.color_type!=1 AND x.id_product=i.id_product  AND x.id_order=i.id_order) as pigments,
+                                            @riedidla := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.color_type=1 AND x.id_product=i.id_product  AND x.id_order=i.id_order) as riedidla,
+                                            @cena_rcp := ROUND(@pigmenty * i.quantity + @riedidla,2) as cena_spolu_nakup,
+                                            ROUND(@pigmenty + @riedidla,2) as jednotkova_cena_spolu_nakup
+                                        FROM `order` o
+                                        JOIN `customer` c ON o.id_customer=c.id
+                                        LEFT JOIN `order_item` i ON i.`id_order`= o.`id`
+                                        LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product`
+                                        JOIN `product` p ON i.id_product=p.id
+                                        WHERE o.`id_customer`=c.`id` AND i.id_product=? AND o.`id_customer`=? AND o.`id`!=?
+                                        GROUP BY o.`id`
+                                        ORDER BY o.`date` DESC
+                                        LIMIT 5", array($idProduct, $idCustomer, $idOrder )); 
+    }
+    
 }
 
 ?>

@@ -55,6 +55,34 @@ function validate(f){
 	return valid;	
 }
 
+/* ----------------------
+ * Pri pridavani noveho produktu do objednavky sa zobrazia posledne 
+ * objedavky v ktorych sa nachadza dany vyrobok a dany zakaznik
+ */
+function checkLastOrders(idProduct){
+    var idCustomer = parseFloat($('input[name=id_customer]').val()),
+        idOrder = parseFloat($('input[name=id_order]').val());
+    if(isNaN(idCustomer) || isNaN(idOrder)) return;
+     $.getJSON(getUrl, { act: 27, idProduct : idProduct,  idCustomer : idCustomer, idOrder: idOrder}, function(json) {  
+        if(json.err === 0){  
+           if(json.html !== 0){
+               $('#lastOrdersTable').html(json.html);
+               createClasses();
+               $('#lastOrders').show(100);
+           } 
+        }else { 
+            showStatus(json);
+       }
+    });  
+}
+
+function closeLastOrders(){
+    var o = $('#lastOrders');
+    if(o !== undefined){
+        o.hide(100);
+    }
+}
+
 /*--------------------------------------------
  *  Skryje input s novou cenu a nastavit checkbox na unchacked
  */
@@ -109,6 +137,8 @@ function divNums(cislo, delitel){
  * v pripae ak je zaskrtnuty checkbox " Rozpočítať náklady do ceny predaj / kg "
  */
 function recomputePriceSale(){
+    
+   // console.log('copmuting..');
     var priceItem = parseFloat($('input[name=price]').val()),
         itemQuantity = parseFloat($('input[name=quantity_kg]').val()),
         materialType = parseFloat($('input[name=materialType]').val()),
@@ -116,16 +146,20 @@ function recomputePriceSale(){
         priceSale = parseFloat($("#ercp input[name=price_sale]").val()),
         priceTotal = parseFloat($.trim($("#priceTotal").text().replace("\u20ac","").replace(",","."))),
         profit = parseFloat($.trim($("#profit").text().replace("%","")));
-        newPrice = priceSale;
+      //  newPrice = priceSale;
         profit = (profit !== 0 ? (1 + (profit / 100) ) : 1 );
         if(materialType !== undefined && priceItem !== 0 && itemQuantity !== 0 && !isNaN(itemQuantity) && !isNaN(priceItem)){
             switch(materialType){
                 case BAZA :
-                case OBAL :
                      newPrice = profit * ((itemQuantity * priceItem) + divNums(priceTotal, totalWeight));
                      break;
+                case OBAL :
+                     newPrice = ((priceItem  === 0 || totalWeight === 0) ? 
+                         priceSale : 
+                         divNums((priceTotal + (priceItem * itemQuantity)) * profit, totalWeight));                  
+                     break;
                 case RIEDIDLO :
-                     newPrice = ((priceItem || totalWeight === 0) ? 
+                     newPrice = ((priceItem  === 0 || totalWeight === 0) ? 
                          priceSale : 
                          divNums((priceTotal + (priceItem * itemQuantity)) * profit, (totalWeight + itemQuantity)));                  
                      break;
@@ -134,6 +168,7 @@ function recomputePriceSale(){
                     return;
             }
         }
+        console.log('Newprice: '+newPrice);
         $("input[name=new_price_sale]").val(Math.round(newPrice*100) / 100);
 }
 
@@ -204,6 +239,9 @@ $(function() {
         
        initDate();
         
+        
+        $('#pf #p').change(function(){closeLastOrders();});
+        $('#lastOrders img').click(function(){closeLastOrders();});
         $("#recipe-item-order input").not('input[name=new_price_sale]').keyup(function(){recomputePriceSale();});
                 
         // v rezepture objednavky, pri pridavani novej polozky
@@ -272,6 +310,7 @@ $(function() {
              },
             select: function( e, ui ) {
                    getProductPrice(ui.item.v.id);
+                   checkLastOrders(ui.item.v.id);
                    $('input[name=id_product]').val(ui.item.v.id);
                    $('#p').addClass('ok2');
             },

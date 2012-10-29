@@ -98,6 +98,11 @@
         <!-- PRIDANIE POLOZKY OBEJDNAVKY ========================== -->
         
         <div class="add-product">
+            <div id="lastOrders"> 
+                <h2 class="cstHead">Posledných 5 objednávok zákazníka <em><?php echo $order[0]['name']; ?></em> v ktorých sa nachádza zvolený tovar</h2>
+                    <img src="/static/img/close.png" alt="Zatvorit" />
+                    <div id="lastOrdersTable"></div>
+                </div>
             <strong>Pridanie novej proložky do objednávky</strong>
             <form id="pf"> 
             <div>    
@@ -118,6 +123,7 @@
                 <input type="submit" class="ibtn-sm flr" value="Pridať +" />
              </div>
             <input type="hidden" name="act"  value="13" />
+            <input type="hidden" name="id_customer"  value="<?php echo $order[0]['id_customer']; ?>" />
             <input type="hidden" name="id_order"  value="<?php echo $_GET['id']; ?>" />
             <input type="hidden" name="id_product"  value="0" />
             </form>

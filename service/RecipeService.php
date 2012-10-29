@@ -27,6 +27,7 @@ class RecipeService{
                                     LEFT JOIN `color` c ON i.`id_color`=c.`id`".
                                     $this->where($searchQuery)."
                                     GROUP BY p.`id`
+                                    ORDER BY p.`code`
                                     LIMIT $offset,  $peerPage");
     }
     
@@ -62,16 +63,16 @@ class RecipeService{
          return count($r);       
     }
     
-    public function create($code, $label, $price, $isRecipe){
+    public function create($code, $label, $price, $recipeId){
             $this->validateRecipe($code, $label, $price);
             $this->conn->insert("INSERT INTO `product` (`code`, `label`, `price` , `recipe`) VALUES (?,?,?,?)", 
-            array($code, $label, $price, $isRecipe));
+            array(strtoupper($code), strtoupper($label), $price, $recipeId));
     }
     
     public function update($code, $label, $price, $recipeId){
             $this->validateRecipe($code, $label, $price);
             $this->conn->insert("UPDATE `product` SET `code`=?, `label`=?, `price`=? WHERE `id`=? LIMIT 1", 
-            array($code, $label, $price, $recipeId));
+            array(strtoupper($code), strtoupper($label), $price, $recipeId));
     }
     
     public function delete($recipeId){

@@ -85,7 +85,7 @@ class OrderPresenter {
   
      public function getProfit($nakup, $predaj){
         if($predaj == 0  || $nakup == 0  ) return "0";
-        return  round(((($predaj - $nakup) / $nakup) * 100),2). " %";
+        return  round(((($predaj - $nakup) / $nakup) * 100)). " %";
     }
 
     

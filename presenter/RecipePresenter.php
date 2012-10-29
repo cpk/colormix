@@ -61,8 +61,8 @@ class RecipePresenter{
     
     private function getRecipeTableRow($row){
         return "<tr>".
-                '<td class="c">'.$row["code"].'</td>'.
-                '<td>'.$row["label"].'</td>'.
+                '<td class="l w100">'.strtoupper($row["code"]).'</td>'.
+                '<td>'.strtoupper($row["label"]).'</td>'.
                 '<td class="r">'.round($row["total_price"] + $row["price"],4).' '.$this->priceUnit.'</td>'.
                 '<td class="c w50"><a class="edit" href="./index.php?p=recipe&amp;sp=edit&amp;id='.$row["id"].'">upraviť</a></td>'.
                 '<td class="c w50"><a class="del" href="#id'.$row["id"].'"></a></td>'.
@@ -82,11 +82,12 @@ class RecipePresenter{
                '<th>Cena dávky na 1kg</th><th>Upraviť</th><th>Zmazať</th></tr></thead>';
     }
     
+    
     private function getRecipeItemTableRow($row){
         return "<tr>".
                 '<td class="c">'.$row["code"].'</td>'.
                 '<td>'.$row["name"].'</td>'.
-                '<td class="r">'.  $this->formatPrice(floatval($row["price"])).'/'.$row["unit"].'</td>'.
+                '<td class="r">'.  $this->formatPrice($row["price"],4).'/'.$row["unit"].'</td>'.
                 '<td class="r il">'.  $this->replaceDot(floatval($row["quantity_kg"])).' '.$row["unit"].'</td>'.
                 '<td class="r">'.$this->formatPrice(($row["price"] * $row["quantity_kg"])).'</td>'.
                 '<td class="c w50"><a class="edit" href="#id'.$row["id"].'">upraviť</a></td>'.
@@ -118,8 +119,8 @@ class RecipePresenter{
         return str_replace(".", ",", $val);
     }
     
-    private function formatPrice($price){
-        return number_format(round($price, 2),2,","," ").' '.$this->priceUnit;
+    private function formatPrice($price, $round = 2){
+        return number_format(round($price, $round),$round,","," ").' '.$this->priceUnit;
     }
     
     public function createNavigator($pageNumber, $peerPage){

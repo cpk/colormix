@@ -31,7 +31,18 @@ class OrderByRecipePresenter {
     }
     
     
-
+     public function printOrderByProductAndCustomer($idProduct, $idCustomer, $idOrder){
+         $data =  $this->orderService->getProductByIdPoductAndIdCustomer($idProduct, $idCustomer, $idOrder);
+         if($data == null) return false;
+         $html = '<table>'.$this->getTableHead();
+         for($i =0; $i < count($data); $i++){
+              $html .= $this->getOrderTableRow($data[$i]);
+         }
+         return $html.'</table>';
+     }
+     
+     
+     
      public function printOrdersByRecipe($id, $pageNumber, $peerPage){
        $data =  $this->orderService->getOrdersByRecipieId($id, $pageNumber, $peerPage);
        if($data == null) return '<p class="alert">0 zákazníkov si objednalo tento výrobok</p>';
@@ -49,7 +60,7 @@ class OrderByRecipePresenter {
            $html .= $this->getOrderTableRow($data[$i]);
        }
 
-       return $html;
+       return $html.'</table>';
     }
     
     

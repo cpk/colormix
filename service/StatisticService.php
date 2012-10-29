@@ -24,7 +24,7 @@ class StatisticService {
     }
     
     
-    public function getTopCustomers($limit = 5){
+    public function getTopCustomers($limit = 20){
         return $this->conn->select("SELECT name, 
                                             ROUND(SUM(spolu_nakup)) as spolu_nakup, 
                                             ROUND(SUM(spolu_predaj)) as spolu_predaj 

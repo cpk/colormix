@@ -18,7 +18,7 @@
 ?>
 
 <div class="tbox">
-    <strong>TOP 5 odberatlov</strong>
+    <strong>TOP 20 odberateľov</strong>
     
     <div class="tcontent">
     <form class="filter" method="get" action="/index.php">
@@ -46,7 +46,6 @@
             ]);
 
             var options = {
-              title: 'TOP 5 odberaetľov',
               fontSize : 10
             };
 
@@ -55,7 +54,7 @@
           }
         </script>
 
-    <div id="chart_div" style="width: 850px; height: 800px;"></div>
+    <div id="chart_div" style="width: 850px; height: 1000px;"></div>
     <?php } ?>
 
     </div>

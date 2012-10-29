@@ -71,7 +71,7 @@ class OrderItemPresenter {
                 '<td class="r">'.$this->formatPrice($row["cena_spolu_nakup"] + $row["cena_tovar"]).'</td>'.
                 '<td class="r il">'.$this->formatPrice($row["price_sale"]).'</td>'.
                 '<td class="r">'.$this->formatPrice($row["cena_spolu_predaj"]).'</td>'.
-                '<td class="r">'.$this->getProfit($itemPrice, $row["price_sale"]).' %</td>'.
+                '<td class="r">'.$this->getProfit($row["cena_spolu_nakup"] + $row["cena_tovar"], $row["cena_spolu_predaj"]).'</td>'.
                 '<td class="c w50 hide"><a class="edit" href="#id'.$row["id"].'">upraviť</a></td>'.
                 '<td class="c w50 hide"><a class="del3" href="#id'.$row["id"].'"></a></td>'.
                "</tr>";
@@ -87,7 +87,7 @@ class OrderItemPresenter {
        $html = '';
        for($i=0 ; $i < count($data); $i++ ){
            $this->totalPrice += round($data[$i]["cena_spolu_nakup"] + $data[$i]["cena_tovar"],2);
-           $this->saleTotalPrice += round($data[$i]['cena_spolu_predaj']);
+           $this->saleTotalPrice += round($data[$i]['cena_spolu_predaj'],2);
            $html .= $this->getRecipeItemTableRow($data[$i]);
        }
        return  $html;
