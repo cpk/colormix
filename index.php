@@ -27,6 +27,6 @@
                     include_once  BASE_DIR."/inc/login.page.php";
                 }
 	}catch(MysqlException $ex){
-		exit("Vyskytol sa problém s databázou." );
+		die('<!DOCTYPE html><html><head><meta charset="utf-8" /></head><body>Vyskytol sa problém s databázou.</body><html>');
 	}
 	exit;
