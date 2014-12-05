@@ -21,7 +21,7 @@ class OrderService {
     private $totalSalePrice = null;
     
     
-    private $q = 'SELECT o.`id`, o.`date`, c.`name`, u.`givenname`, u.`surname`,
+    private $q = 'SELECT o.`id`, o.`supplier`, o.`date`, c.`name`, u.`givenname`, u.`surname`,
 
                         (
                         coalesce((SELECT SUM(x.quantity_kg * x.price )
@@ -93,8 +93,8 @@ class OrderService {
     
     public function create($idCustomer, $date, $label){
         $this->validateOrder($idCustomer, $date, $label);
-        $this->conn->insert("INSERT INTO `order` (`id_customer`, `label`, `date`, `id_user`) VALUES (?,?,?,?)",
-                array ($idCustomer, $label, $date, $_SESSION['id']) );
+        $this->conn->insert("INSERT INTO `order` (`id_customer`, `label`, `date`, `id_user`, `supplier`) VALUES (?,?,?,?,?)",
+                array ($idCustomer, $label, $date, $_SESSION['id'], $_SESSION['supplier']) );
     }
     
     

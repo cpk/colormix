@@ -230,6 +230,9 @@ jQuery.fn.center = function () {
 };
 
 $(function() {
+    if ($.isFunction('chosen')) {
+        $("select").chosen(); 
+    }
 	$('.ajaxSubmit').submit(function (){request($(this));return false;});
 	createClasses();
         // Datepicker ------------------------------------------------------

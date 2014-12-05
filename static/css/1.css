@@ -1,0 +1,8 @@
+#logo span,
+nav a:hover, 
+nav .curr,
+.totalPrice span,#stats-info span{background:#b54040;}
+nav a:hover, nav .curr{color:#fff}
+body{background:#f5f5f5;}
+#left ul li a:hover,#left .curr{color:#b54040;}
+

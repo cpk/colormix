@@ -20,16 +20,20 @@ function isCurrent($pageName, $param){
     
 <!-- styles & js -->
 <link rel="stylesheet" href="./static/css/main.css" /> 
+<link rel="stylesheet" href="./static/css/main.css" /> 
+<link rel="stylesheet" href="./static/css/chosen.min.css" /> 
 <link rel="stylesheet" href="./static/css/blitzer/jquery-ui-1.8.21.custom.css" /> 
+<link rel="stylesheet" href="./static/css/<?php echo $_SESSION['supplier']; ?>.css" /> 
 <!--[if IE]> <script src="http://html5shiv.googlecode.com/svn/trunk/html5.js"></script> <![endif]-->
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+<script src="./static/js/chosen.jquery.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
 <?php if($page == "statistic") echo '<script type="text/javascript" src="https://www.google.com/jsapi"></script>'; ?>
 <script src="./static/js/scripts.js"></script>
 </head>
 <body>
 	<header>
-            <a href="./"><img src="/static/img/logo.png" alt="COLORMIX"></a>
+            <a id="logo" href="./"><img src="/static/img/logo.png" alt="COLORMIX"> <span><?php echo $_SESSION['supplier'] == 1 ? 'VITON' : 'NOVY DODAVATEL' ?></span></a>
         </header>
         <nav>
             <ul class="shadow">

@@ -18,7 +18,7 @@ class ColorService{
     public function recievAllColors(){
        return  $this->conn->select("SELECT c.`id`,c.`code`,c.`name`,c.`price`,c.`color_type`, m.`unit` 
                                     FROM `color` c, `measurement` m
-                                    WHERE m.`id`=c.`id_measurement` ORDER BY c.`code`");
+                                    WHERE m.`id`=c.`id_measurement` AND c.`supplier`= ".$_SESSION['supplier']." ORDER BY c.`code`");
     }
     
     public function recievById( $id ){
@@ -30,7 +30,7 @@ class ColorService{
      public function recievByCode( $code ){
         return  $this->conn->select("SELECT c.`id`,c.`code`,c.`name`,c.`price`,c.`color_type`, m.`unit` 
                                      FROM `color` c, `measurement` m
-                                     WHERE m.`id`=c.`id_measurement` AND c.`id`=?", array($code));
+                                     WHERE m.`id`=c.`id_measurement` AND c.`supplier`= ".$_SESSION['supplier']." AND c.`id`=?", array($code));
     }
     
     
@@ -38,8 +38,8 @@ class ColorService{
     
     public function create($code, $name, $price, $color_type, $id_measurement){
         $this->validateColor($code, $name, $price);
-        $this->conn->insert("INSERT INTO `color` (`code`, `name`, `price`, `color_type`, `id_measurement`) VALUES (?,?,?,?,?)", 
-                array($code, $name, $price, $color_type, $id_measurement));
+        $this->conn->insert("INSERT INTO `color` (`code`, `name`, `price`, `color_type`, `id_measurement`, `supplier`) VALUES (?,?,?,?,?,?)", 
+                array($code, $name, $price, $color_type, $id_measurement, $_SESSION['supplier']));
     }
     
     

@@ -58,15 +58,15 @@ class RecipeService{
                                 LEFT JOIN `order_item` i ON i.`id_order`= o.`id`
                                 LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product`
                                 JOIN `product` p ON i.id_product=p.id
-                                WHERE o.`id_customer`=c.`id` AND i.id_product=?
+                                WHERE p.`supplier`= ".$_SESSION['supplier']." AND `id_customer`=c.`id` AND i.id_product=?
                                 Group by c.id", array($idRecipe));
          return count($r);       
     }
     
     public function create($code, $label, $price, $recipeId){
             $this->validateRecipe($code, $label, $price);
-            $this->conn->insert("INSERT INTO `product` (`code`, `label`, `price` , `recipe`) VALUES (?,?,?,?)", 
-            array(strtoupper($code), strtoupper($label), $price, $recipeId));
+            $this->conn->insert("INSERT INTO `product` (`code`, `label`, `price`, `recipe`, `supplier`) VALUES (?,?,?,?)", 
+            array(strtoupper($code), strtoupper($label), $price, $recipeId, $_SESSION['supplier']));
     }
     
     public function update($code, $label, $price, $recipeId){
@@ -113,7 +113,11 @@ class RecipeService{
     }
     
     private function where($searchQuery){
-        if($searchQuery != null)   return " WHERE p.`label` LIKE '%".$searchQuery."%' OR p.`code` LIKE '%".$searchQuery."%'";
+        $where = " WHERE p.`supplier`= ".$_SESSION['supplier']." ";
+        if($searchQuery != null){
+            return $where." AND p.`label` LIKE '%".$searchQuery."%' OR p.`code` LIKE '%".$searchQuery."%'";
+        }
+        return $where;
     }
 }
 

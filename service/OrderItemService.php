@@ -91,6 +91,7 @@ class OrderItemService {
                                     p.code,
                                     p.label,
                                     p.recipe,
+                                    p.supplier,
                                     @tdq := ROUND((i.quantity + (SELECT coalesce(SUM(x.quantity_kg),0) FROM order_subitem x, color y WHERE y.id=x.id_color AND y.color_type=2 AND x.id_product=i.id_product AND x.id_order=i.id_order)),2) as mnozstvo_spolu, 
                                     ROUND(@tdq  * i.price_sale ,2) as cena_spolu_predaj,
                                     @cena_tovar := ROUND(SUM(i.quantity * i.price),2) as cena_tovar,

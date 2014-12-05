@@ -246,7 +246,7 @@
 			break;
                            /* AUTOCOMPLETE customer */
                             case 19 : 
-                            $data = $conn->select("SELECT `label` as name FROM `product` WHERE `label` LIKE '%".$_GET["term"]."%' LIMIT 10");
+                            $data = $conn->select("SELECT `label` as name FROM `product` WHERE `supplier`= ".$_SESSION['supplier']." AND `label` LIKE '%".$_GET["term"]."%' LIMIT 10");
                             if($data == null) $data = array();
                             echo  $_GET["cb"] . "(" . json_encode($data) . ")";  
                             exit;  

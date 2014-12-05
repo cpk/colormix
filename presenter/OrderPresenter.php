@@ -47,7 +47,8 @@ class OrderPresenter {
     
     
     private function getTableHead(){
-        return '<tr><th>Obj č.</th>
+        return '<tr><th>Dodávateľ</th>
+                    <th>Obj č.</th>
                     <th>Dátum obj.</th>
                     <th>Odberateľ</th>
                     <th>Nákup</th>
@@ -62,6 +63,7 @@ class OrderPresenter {
         
     private function getOrderTableRow($row){
         return "<tr>".
+                '<td class="c w50 supplier"><span>'.($row["supplier"] == 1 ? 'VTN' : 'XYZ').'</span></td>'.
                 '<td class="c w50">OBJ-'.$row["id"].'</td>'.
                 '<td class="c">'.date('d.m.Y', strtotime($row['date']) ).'</td>'.
                 '<td>'.$row["name"].'</td>'.
