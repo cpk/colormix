@@ -33,7 +33,7 @@ function isCurrent($pageName, $param){
 </head>
 <body>
 	<header>
-            <a id="logo" href="./"><img src="/static/img/logo.png" alt="COLORMIX"> <span><?php echo $_SESSION['supplier'] == 1 ? 'VITON' : 'NOVY DODAVATEL' ?></span></a>
+            <a id="logo" href="./"><img src="/static/img/logo.png" alt="COLORMIX"> <span><?php echo $_SESSION['supplier'] == 1 ? 'VITON' : 'COLORWEST' ?></span></a>
         </header>
         <nav>
             <ul class="shadow">

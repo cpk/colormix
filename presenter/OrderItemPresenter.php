@@ -65,7 +65,7 @@ class OrderItemPresenter {
      private function getRecipeItemTableRow($row){
          $itemPrice = floatval(($row["recipe"] == 1 ? $row["jednotkova_cena_spolu_nakup"] : $row["price"]));
         return "<tr>".
-                '<td class="c w50 supplier-'.$row["supplier"].'"><span>'.($row["supplier"] == 1 ? 'VTN' : 'XYZ').'</span></td>'.
+                '<td class="c w50 supplier-'.$row["supplier"].'"><span>'.($row["supplier"] == 1 ? 'VTN' : 'CLRW').'</span></td>'.
                 ($row["recipe"] == 1 ? '<td class="recipe nm"><a href="index.php?p=order&amp;sp=redit&amp;id='.$row["id"].'">'.$row["code"].' - '
                 .$row["label"].'</a></td>' : '<td class="nm">'.$row["code"].' - '.$row["label"].'</td>') .
                 '<td class="r il">'.$row["mnozstvo_spolu"].' '.($row["recipe"] == 1 ? 'kg' : 'ks').'</td>'.

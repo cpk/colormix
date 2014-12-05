@@ -65,7 +65,7 @@ class RecipeService{
     
     public function create($code, $label, $price, $recipeId){
             $this->validateRecipe($code, $label, $price);
-            $this->conn->insert("INSERT INTO `product` (`code`, `label`, `price`, `recipe`, `supplier`) VALUES (?,?,?,?)", 
+            $this->conn->insert("INSERT INTO `product` (`code`, `label`, `price`, `recipe`, `supplier`) VALUES (?,?,?,?,?)", 
             array(strtoupper($code), strtoupper($label), $price, $recipeId, $_SESSION['supplier']));
     }
     

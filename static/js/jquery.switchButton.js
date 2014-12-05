@@ -46,8 +46,8 @@
 
             show_labels: true,			// Should we show the on and off labels?
             labels_placement: "both", 	// Position of the labels: "both", "left" or "right"
-            on_label: "VITON",				// Text to be displayed when checked
-            off_label: "COLORMIX",			// Text to be displayed when unchecked
+            on_label: "COLORWEST",				// Text to be displayed when checked
+            off_label: "VITON",			// Text to be displayed when unchecked
 
             width: 80,					// Width of the button in pixels
             height: 25,					// Height of the button in pixels

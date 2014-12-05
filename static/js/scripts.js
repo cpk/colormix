@@ -230,7 +230,7 @@ jQuery.fn.center = function () {
 };
 
 $(function() {
-    if ($.isFunction('chosen')) {
+   if($.fn.chosen){
         $("select").chosen(); 
     }
 	$('.ajaxSubmit').submit(function (){request($(this));return false;});

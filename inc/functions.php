@@ -25,7 +25,7 @@ function getColorOptions( $conn){
 	$html = '<option value="0">-- Vyberte materiál -- </option>';
 	$array =  $conn->select("SELECT c.`id`, c.`name`, c.`code`, u.`unit`, c.`price`  
                                  FROM `color` c, `measurement` u 
-                                 WHERE c.`id_measurement`=u.`id`
+                                 WHERE c.`id_measurement`=u.`id` AND `c`.`supplier`= ".$_SESSION['supplier']."
                                  ORDER BY `code`");	
 	$c = count($array); 
 	
