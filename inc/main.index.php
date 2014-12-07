@@ -9,7 +9,9 @@
 function isCurrent($pageName, $param){
     return ($pageName == $param ? 'class="curr"' : '');
 }
-
+    if(isset($_GET['switch'])){
+        $_SESSION['supplier'] = $_SESSION['supplier'] == 1 ? 2 : 1;
+    }
 ?>
 <!DOCTYPE HTML>
 <html>
@@ -34,7 +36,12 @@ function isCurrent($pageName, $param){
 <body>
 	<header>
             <a id="logo" href="./"><img src="/static/img/logo.png" alt="COLORMIX"> <span><?php echo $_SESSION['supplier'] == 1 ? 'VITON' : 'COLORWEST' ?></span></a>
-        </header>
+
+            <div id="switch">
+                <span>Prepnúť na dodávateľa:</span>
+                <a href="?<?php echo $_SERVER['QUERY_STRING']; ?>&amp;switch=true"><?php echo $_SESSION['supplier'] == 1 ?  'COLORWEST' : 'VITON' ?></a>
+            </div>
+    </header>
         <nav>
             <ul class="shadow">
                 <li><a <?php echo isCurrent("color", $page)?> href="/index.php?p=color">Správa materiálu</a></li>

@@ -307,7 +307,7 @@ $(function() {
                 reques.act = 12;
                 $.getJSON(getUrl, reques, function(data) {  
                     response( $.map( data, function( item ) {
-                        return {label: item.code +' - '+ item.label , value :  item.label,  v: item};
+                        return {label: item.code +' - '+ item.label + ' - (' + (item.supplier == 1 ? 'VTN' : 'CLRW') + ')'  , value :  item.label,  v: item};
                     }));
                 });  
              },
@@ -673,4 +673,7 @@ $(function() {
     return false;
 	});
 	
+    $(document).on('click','.cp.recipie', function(){
+        return confirm('Skutočne chcete vytvoriť duplikát receptúry?');
+    });
 });

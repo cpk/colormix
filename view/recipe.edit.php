@@ -1,13 +1,13 @@
 <?php
     if(!$auth->isLogined()){ die("Neautorizovaný prístup."); }
 $rs = new RecipeService($conn);
-    $rp = new RecipePresenter($conn, WEIGHT_UNIT ,PRICE_UNIT, $rs);
-    $recipieData = $rs->getRecipeById($_GET['id']);
-    
-    if($recipieData == null){
-        echo '<p class="alert">Požadovaná položka sa v databáze nenachádza.</p>';
-        exit;
-    }
+$rp = new RecipePresenter($conn, WEIGHT_UNIT ,PRICE_UNIT, $rs);
+$recipieData = $rs->getRecipeById($_GET['id']);
+
+if($recipieData == null){
+    echo '<p class="alert">Požadovaná položka sa v databáze nenachádza.</p>';
+    exit;
+}
     
 ?>
 <div class="tbox">
@@ -18,20 +18,21 @@ $rs = new RecipeService($conn);
         ?>  
         
         <form class="ajaxSubmit"> 
-                <div class="i ">
-                    <p>Receptúra bola vytovorená: <b><?php echo $recipieData[0]['create']; ?></b></p>
-                    <p>Objednalo si ju: <a href="/index.php?p=order&amp;sp=orderbyrecipe&amp;id=<?php echo $_GET['id']; ?>"><?php echo $rs->getCountCustomerByRecipe($_GET['id']); ?> zákazníkov</a></p>
-                </div> 	
-                <div class="i ">
-                    <span>Kód:</span><input 
-                        maxlength="10" type="text" class="w100 required" name="code" value="<?php echo $recipieData[0]['code']; ?>"/>
-                     <span>Názov:</span><input
-                        maxlength="255" type="text" class="w280 required" name="label" value="<?php echo $recipieData[0]['label']?>"/>
-                      <input type="submit" class="ibtn no-margin" value="Uložiť zmeny" />
-                      <input type="hidden" value="6" name="act" />
-                      <input type="hidden" value="<?php echo $_GET['id']; ?>" name="id" />
-                </div> 	
-            </form>
+            <div class="i ">
+                <p>Receptúra bola vytovorená: <b><?php echo $recipieData[0]['create']; ?></b></p>
+                <p>Objednalo si ju: <a href="/index.php?p=order&amp;sp=orderbyrecipe&amp;id=<?php echo $_GET['id']; ?>"><?php echo $rs->getCountCustomerByRecipe($_GET['id']); ?> zákazníkov</a></p>
+            </div> 	
+            <div class="i ">
+                <span>Kód:</span><input 
+                    maxlength="10" type="text" class="w100 required" name="code" value="<?php echo $recipieData[0]['code']; ?>"/>
+                 <span>Názov:</span><input
+                    maxlength="255" type="text" class="w280 required" name="label" value="<?php echo $recipieData[0]['label']?>"/>
+                  <input type="submit" class="ibtn no-margin" value="Uložiť zmeny" />
+                  <input type="hidden" value="6" name="act" />
+                  <input type="hidden" value="<?php echo $_GET['id']; ?>" name="id" />
+            </div> 	
+        </form>
+        <a class="cp recipie" href="/index.php?p=recipe&amp;sp=duplicate&amp;id=<?php echo $_GET['id']; ?>">Duplikovať</a>
         <br />
         <form class="inlineEditing">
         <?php

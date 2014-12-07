@@ -27,7 +27,7 @@ class RecipeService{
                                     LEFT JOIN `color` c ON i.`id_color`=c.`id`".
                                     $this->where($searchQuery)."
                                     GROUP BY p.`id`
-                                    ORDER BY p.`code`
+                                    ORDER BY p.`code`, p.`label` 
                                     LIMIT $offset,  $peerPage");
     }
     
@@ -118,6 +118,24 @@ class RecipeService{
             return $where." AND p.`label` LIKE '%".$searchQuery."%' OR p.`code` LIKE '%".$searchQuery."%'";
         }
         return $where;
+    }
+
+     public function duplicateRecipie($id){
+        
+        $recipe = $this->conn->select("SELECT * FROM `product` WHERE `id`=? LIMIT 1", array($id));
+        
+        if($recipe == null || count($recipe) == 0){
+            throw new ValidationException("Objednávku sa nepodarilo skopírovať.");
+        }
+        
+        $this->create($recipe[0]['code'], $recipe[0]['label']." (duplikat)", $recipe[0]['price'], $recipe[0]['recipe']);
+        $generatedId = $this->getInsertId();
+        $this->conn->insert(
+                "INSERT INTO product_item (id_product, id_color, quantity_kg) ".
+                "SELECT $generatedId, id_color, quantity_kg FROM product_item WHERE id_product=?",
+                array($id)
+        );
+        return $generatedId;
     }
 }
 

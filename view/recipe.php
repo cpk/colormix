@@ -4,6 +4,12 @@
     require_once  BASE_DIR."/service/RecipeItemService.php";
     require_once  BASE_DIR."/presenter/RecipePresenter.php";
 
+    if($subpage == "duplicate"){
+        $recipieService = new RecipeService($conn);
+        $id = $recipieService->duplicateRecipie((int)$_GET['id']);
+        header('Location: /index.php?success=1&p=recipe&sp=edit&id='.$id);
+    }
+
 ?> 
 
 <div id="left" class="box">
@@ -16,7 +22,9 @@
             <div id="right" class="box">
                 
                   <?php
-            
+            if(isset($_GET['success'])){
+                echo '<p class="ok">Úspešne uložené</p><br />';
+            }      
             switch ($subpage){
                 case "view" : 
                         include_once BASE_DIR."/view/recipe.view.php";

@@ -148,7 +148,7 @@
 			break;
                             /* AUTOCOMPLETE product */
                             case 12 : 
-                            $data = $conn->simpleQuery("SELECT `id`, `code`, `label` FROM `product` WHERE `label` LIKE '". 
+                            $data = $conn->simpleQuery("SELECT `id`, `code`, `label`,`supplier` FROM `product` WHERE `label` LIKE '". 
                                             $_GET["term"]."%' OR `code` LIKE '". $_GET["term"]."%' ORDER BY `code` LIMIT 12");
                             if($data == null) $data = array();
                             echo  $_GET["cb"] . "(" . json_encode($data) . ")";  
