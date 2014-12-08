@@ -4,7 +4,7 @@
     $cp = new ColorPresenter($conn, WEIGHT_UNIT ,PRICE_UNIT);
 ?>
 <div class="tbox">
-    <strong>Prigmenty</strong>
+    <strong>Pigmenty</strong>
     <div class="tcontent">
         <?php echo $cp->printColors(); ?>
     </div>

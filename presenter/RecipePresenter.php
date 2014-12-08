@@ -77,7 +77,7 @@ class RecipePresenter{
  
     
     private function getItemsTableHead(){
-        return '<thead><tr><th>Kód</th><th>Názov</th><th>Cena za jednotku</th>'.
+        return '<thead><tr><th>Dodávateľ</th><th>Kód</th><th>Názov</th><th>Cena za jednotku</th>'.
                '<th class="il text-quantity_kg required">Dávka na 1kg</th>'.
                '<th>Cena dávky na 1kg</th><th>Upraviť</th><th>Zmazať</th></tr></thead>';
     }
@@ -85,6 +85,7 @@ class RecipePresenter{
     
     private function getRecipeItemTableRow($row){
         return "<tr>".
+                '<td class="c w50 supplier-'.$row["supplier"].'"><span>'.getSupplier($row["supplier"]).'</span></td>'.
                 '<td class="c">'.$row["code"].'</td>'.
                 '<td>'.$row["name"].'</td>'.
                 '<td class="r">'.  $this->formatPrice($row["price"],4).'/'.$row["unit"].'</td>'.

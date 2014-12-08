@@ -23,16 +23,16 @@ function getOptions( $conn, $table, $colum, $first = 0, $skip = NULL){
 
 function getColorOptions( $conn){
 	$html = '<option value="0">-- Vyberte materiál -- </option>';
-	$array =  $conn->select("SELECT c.`id`, c.`name`, c.`code`, u.`unit`, c.`price`  
+	$array =  $conn->select("SELECT c.`id`, c.`name`, c.`code`, u.`unit`, c.`price`, c.`supplier`  
                                  FROM `color` c, `measurement` u 
-                                 WHERE c.`id_measurement`=u.`id` AND `c`.`supplier`= ".$_SESSION['supplier']."
+                                 WHERE c.`id_measurement`=u.`id`
                                  ORDER BY `code`");	
 	$c = count($array); 
 	
 	for($j=0; $j<$c; $j++) {   
             $html .= "<option value=\"".$array[$j]["id"]."\">".
                     $array[$j]["code"]." &nbsp; | &nbsp; ".$array[$j]["name"]." &nbsp; | &nbsp; ".
-                    floatval($array[$j]["price"]) ." &euro; / ".$array[$j]["unit"]."</option>\n";
+                    floatval($array[$j]["price"]) ." &euro;/".$array[$j]["unit"]. " - (". getSupplier($array[$j]["supplier"]).")</option>\n";
 	}   
 	return $html;
 }
@@ -50,5 +50,9 @@ function number_clean($num){
 
 function isEmail($email){
 	return (preg_match ("/^[_a-z0-9-]+(.[_a-z0-9-]+)*@[a-z0-9-]+(.[a-z0-9-]+)*(.[a-z]{2,3})$/i" ,$email) == 1);
+}
+
+function getSupplier($code){
+	return $code == 1 ? 'VTN' : 'CLRW';
 }
 ?>

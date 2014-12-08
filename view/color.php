@@ -7,7 +7,7 @@
 
 <div id="left" class="box">
                 <ul>
-                    <li><a <?php echo isCurrent("view", $subpage)?> href="/index.php?p=color">Zobraziť prigmenty</a></li>
+                    <li><a <?php echo isCurrent("view", $subpage)?> href="/index.php?p=color">Zobraziť pigmenty</a></li>
                     <li><a <?php echo isCurrent("new", $subpage)?> href="/index.php?p=color&amp;sp=new">Pridať nový materiál</a></li>
                 </ul>
             </div>

@@ -44,7 +44,7 @@ class RecipeItemService {
 
 
     public function getRecipeItemsBy($recipeId){
-        return $this->conn->select("SELECT i.`id`, c.`name`, c.`code`, c.`price`, i.`quantity_kg`, m.`unit`, m.`id` as id_unit
+        return $this->conn->select("SELECT i.`id`, c.`name`, c.`code` ,c.`supplier`, c.`price`, i.`quantity_kg`, m.`unit`, m.`id` as id_unit
                                     FROM `color` c, `product_item` i, measurement m
                                     WHERE i.`id_color`=c.`id` AND i.`id_product`=? AND m.`id`=c.`id_measurement`", 
                 array( $recipeId ));

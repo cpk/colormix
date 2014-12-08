@@ -63,7 +63,7 @@ class OrderPresenter {
         
     private function getOrderTableRow($row){
         return "<tr>".
-                 '<td class="c w50 supplier-'.$row["supplier"].'"><span>'.($row["supplier"] == 1 ? 'VTN' : 'CLRW').'</span></td>'.
+                '<td class="c w50 supplier-'.$row["supplier"].'"><span>'.getSupplier($row["supplier"]).'</span></td>'.
                 '<td class="c w50">OBJ-'.$row["id"].'</td>'.
                 '<td class="c">'.date('d.m.Y', strtotime($row['date']) ).'</td>'.
                 '<td>'.$row["name"].'</td>'.

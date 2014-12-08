@@ -72,8 +72,8 @@ class ColorService{
     
      private function validateColor($code, $name, $price){
         
-        if(strlen($code) > 10)
-            throw new ValidationException("Kód farby môže mať max. 10 znakov");
+        if(strlen($code) > 20)
+            throw new ValidationException("Kód farby môže mať max. 20 znakov");
         
         if(strlen($name) > 45)
             throw new ValidationException("Nazov farby môže mať max. 45 znakov");     

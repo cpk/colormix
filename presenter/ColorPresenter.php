@@ -54,7 +54,7 @@ class ColorPresenter{
                 <div class="i ">
                     <label>Kód výrobku/pigmentu:</label><input value="'.
                 ($colorId != 0 ?  $data[0]["code"] : "").'" 
-                        maxlength="10" type="text" class="w100 required" name="code"/>
+                        maxlength="20" type="text" class="w100 required" name="code"/>
                 </div> 	
                 <div class="i odd">
                     <label>Názov/farba pigmentu:</label><input value="'.
