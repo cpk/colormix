@@ -51,8 +51,9 @@ class RecipePresenter{
                     <th>Odtieň</th>
                     <th>Názov tovaru</th>
                     <th>Cena 1'.$this->weightUnit.'/'.$this->priceUnit.'</th>
-                    <th>Upraviť</th>
-                    <th>Zmazať</th>
+                    <th>Cena  s '.$this->getProfit().'% ziskom</th>
+                    <th class="print-hidden">Upraviť</th>
+                    <th class="print-hidden">Zmazať</th>
                </tr>';
     }
     
@@ -63,10 +64,15 @@ class RecipePresenter{
         return "<tr>".
                 '<td class="l w100">'.strtoupper($row["code"]).'</td>'.
                 '<td>'.strtoupper($row["label"]).'</td>'.
-                '<td class="r">'.round($row["total_price"] + $row["price"],4).' '.$this->priceUnit.'</td>'.
-                '<td class="c w50"><a class="edit" href="./index.php?p=recipe&amp;sp=edit&amp;id='.$row["id"].'">upraviť</a></td>'.
-                '<td class="c w50"><a class="del" href="#id'.$row["id"].'"></a></td>'.
+                '<td class="r">'.$this->getPrice($row).' '.$this->priceUnit.'</td>'.
+                '<td class="r">'.$this->getTotalPriceWithProfit($row).'</td>'.
+                '<td class="c w50 print-hidden"><a class="edit" href="./index.php?p=recipe&amp;sp=edit&amp;id='.$row["id"].'">upraviť</a></td>'.
+                '<td class="c w50 print-hidden"><a class="del" href="#id'.$row["id"].'"></a></td>'.
                "</tr>";
+    }
+
+    private function getPrice($row){
+        return round($row["total_price"] + $row["price"],4);
     }
     
     /* POLOZKY receptury --------------------------------- */
@@ -95,7 +101,27 @@ class RecipePresenter{
                 '<td class="c w50"><a class="del2" href="#id'.$row["id"].'"></a></td>'.
                "</tr>";
     }
-    
+
+   
+    private function getTotalPriceWithProfit($row){
+        return $this->formatPrice($this->getPrice($row) * $this->getPercentageProfit());
+    }
+
+    public function getPercentageProfit(){
+       $profit = $this->getProfit();
+       if($profit == 0){
+          return 1;
+       }
+       return ($profit / 100) + 1;
+    }
+
+    public function getProfit(){
+        if(!isset($_SESSION['profit'])){
+            $_SESSION['profit'] = 75;
+        }
+        return $_SESSION['profit'];
+    }
+
     public function getTbodyOfTableItems($recipeId){
        $data =  $this->recipeItemService->getRecipeItemsBy($recipeId);
        if($data == null) return '<p class="alert">Požiadavke nevyhovuje žiadny záznam</p>';

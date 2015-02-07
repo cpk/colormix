@@ -22,7 +22,7 @@ function isCurrent($pageName, $param){
     
 <!-- styles & js -->
 <link rel="stylesheet" href="./static/css/main.css" /> 
-<link rel="stylesheet" href="./static/css/main.css" /> 
+<link rel="stylesheet" media="print"  href="./static/css/main.print.css" /> 
 <link rel="stylesheet" href="./static/css/chosen.min.css" /> 
 <link rel="stylesheet" href="./static/css/blitzer/jquery-ui-1.8.21.custom.css" /> 
 <link rel="stylesheet" href="./static/css/<?php echo $_SESSION['supplier']; ?>.css" /> 

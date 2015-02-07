@@ -1,0 +1,5 @@
+body{background: #fff !important;}
+header,nav,#left, form,.navigator,.edit,.del,.print-hidden{display:none !important;}
+#right,.tcontent,section{padding:0}
+
+*{box-shadow:none !important;}
