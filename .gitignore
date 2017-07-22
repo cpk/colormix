@@ -3,3 +3,5 @@ config.php
 *.php~
 *.txt
 /nbproject
+/logs
+*.log

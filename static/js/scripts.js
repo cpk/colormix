@@ -676,4 +676,12 @@ $(function() {
     $(document).on('click','.cp.recipie', function(){
         return confirm('Skutočne chcete vytvoriť duplikát receptúry?');
     });
+
+    if($('#stats-info').length){
+        console.log('/ajax.php' + document.location.search + "&page=totals");
+
+        $.get('/ajax.php' + document.location.search + "&page=totals", function(html){
+            $('#stats-info').html(html);
+        });
+    }
 });

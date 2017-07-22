@@ -99,7 +99,7 @@ section a:hover{text-decoration:none;}
 .copyOrder{ background:url(../img/copy_20.png) no-repeat center center; height:20px;width:30px;margin:auto;display:block;}
 .tbox table tbody tr:hover{ background:#fff6eb !important;}
 .tbox table tr.odd{ background:#f9f9f9;}
-.tbox table tr .recipe{background:url(../img/r.png) no-repeat right center;}
+.tbox table tr .recipe{background:url(../img/r.png) no-repeat right center;padding-right: 23px;}
 .tbox table tr .recipe a{color:#0185b9;font-weight:bold;}
 
 form{padding:10px ;border:5px solid #ccc;background:#fcfcfc}

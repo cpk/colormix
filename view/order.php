@@ -28,6 +28,9 @@
                 case "view" : 
                         include_once BASE_DIR."/view/order.view.php";
                     break;
+                case "totals" : 
+                        include_once BASE_DIR."/view/order.view.totals.php";
+                    break;
                 case "orderbyrecipe" : 
                         include_once BASE_DIR."/view/order.orderbyrecipe.php";
                     break;
