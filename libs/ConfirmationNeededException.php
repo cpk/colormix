@@ -1,6 +1,6 @@
 <?php
 
-class ValidationException extends Exception{
+class ConfirmationNeededException extends Exception{
     public function __construct($message){
         parent::__construct($message);
     } 

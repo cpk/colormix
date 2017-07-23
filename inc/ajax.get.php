@@ -158,18 +158,18 @@
                         /* Add new order item to order */
                             case 13 : 
                             $ois = new OrderItemService($conn);
-                            $ois->create($_GET['id_order'], $_GET['id_product'], $_GET['quantity_kg'], $_GET['price_sale']);
+                            $ois->create($_GET['id_order'], $_GET['id_product'], $_GET['quantity_kg'], $_GET['price_sale'], $_GET['item_count']);
                             $oip = new OrderItemPresenter($conn, WEIGHT_UNIT, PRICE_UNIT, null, $ois );
                             $data = array( "err" => 0, 
                                             "msg" => $createMsg, 
                                             "data" => $oip->getTbodyOfTableItems($_GET['id_order']),
                                             "totalPrice" => $oip->getResume(PRICE_UNIT));
-                                break;
+            break;
                          /* INLINE editing poctu ks v obejdnavke */
                             case 14 : 
                             $ois = new OrderItemService($conn);
                             $oip = new OrderItemPresenter($conn, WEIGHT_UNIT, PRICE_UNIT, null, $ois );
-                            $ois->update($_GET['id'], $_GET['quantity'],$_GET['price_sale']);
+                            $ois->update($_GET['id'], $_GET['quantity'],$_GET['price_sale'], $_GET['item_count']);
                             $data = array( "err" => 0, 
                                             "msg" => $updateMsg, 
                                             "data" => $oip->getTbodyOfTableItems($_GET['orderId']),
@@ -234,7 +234,7 @@
                                 $os = new OrderItemService($conn);
                                 $os->updateItemSalePrice($_GET['new_price_sale'], $_GET['id']);      
                             }
-                            $ors->create($info[0]['id'] , $_GET['id_color'], $_GET['price'], $_GET['quantity_kg'], $_GET['idOrder']);
+                            $ors->create($_GET['id_color'], $_GET['price'], $_GET['quantity_kg'], $_GET['idOrder'], $_GET['id']);
                             $orp = new OrderRecipePresenter($conn, WEIGHT_UNIT, PRICE_UNIT, $ors ); 
                             $data = array( "err" => 0, 
                                             "data" => $orp->getTbodyOfTableItems($_GET['id'], $_GET['idOrder']),
@@ -310,10 +310,12 @@
                      
 		}
         }catch(ValidationException $e){
-                $data = array( "err" => 1, "msg" => $e->getMessage() );    
-	}catch(MysqlException $e){
-                $data = array( "err" => 1, "msg" => "Vyskytol sa problém s databázou, operáciu skúste zopakovať" );    
-	}
+                $data = array( "err" => 1, "msg" => $e->getMessage() );
+        }catch(ConfirmationNeededException $e){
+                $data = array( "err" => 0, "confirm" => 1, "msg" => $e->getMessage() );    
+    	}catch(MysqlException $e){
+                    $data = array( "err" => 1, "msg" => "Vyskytol sa problém s databázou, operáciu skúste zopakovať" );    
+    	}
         
         
        // if(isset($data['msg'])) $data['msg'] = utf8_encode($data['msg']);

@@ -1,3 +1,5 @@
+ALTER TABLE `order_item` ADD `item_count` SMALLINT NOT NULL DEFAULT '1' AFTER `price_sale`;
+
 DROP VIEW `view_order`;
 CREATE VIEW `view_order` AS
     SELECT 
@@ -8,7 +10,7 @@ CREATE VIEW `view_order` AS
         `u`.`givenname` AS `givenname`,
         `u`.`surname` AS `surname`,
         ((COALESCE((SELECT 
-                        SUM((`x`.`quantity_kg` * `x`.`price`))
+                        SUM((`x`.`quantity_kg` * `x`.`price` * `z`.`item_count`))
                     FROM
                         (`order_item` `z`
                         JOIN (`order_subitem` `x`
@@ -20,7 +22,7 @@ CREATE VIEW `view_order` AS
                             AND (`z`.`id_order` = `x`.`id_order`)
                             AND (`x`.`id_product` = `z`.`id_product`))),
                 0) + COALESCE((SELECT 
-                        SUM(((`x`.`quantity_kg` * `x`.`price`) * `z`.`quantity`))
+                        SUM(((`x`.`quantity_kg` * `x`.`price`) * `z`.`quantity` * `z`.`item_count`))
                     FROM
                         (`order_item` `z`
                         JOIN (`order_subitem` `x`

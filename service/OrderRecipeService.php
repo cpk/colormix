@@ -29,10 +29,10 @@ class OrderRecipeService {
                 array( $idRecipe ));
     }
 
-    public function create($idProduct, $idColor, $price, $quantityKg, $orderId){
-        $this->validateRecipeItem($idProduct, $idColor, $price, $quantityKg, $orderId);
-        $this->conn->insert("INSERT INTO `order_subitem` (`id_product`, `id_color`, `price`, `quantity_kg`, `id_order`) VALUES (?,?,?,?,?)", 
-                array( $idProduct, $idColor, $price, $quantityKg, $orderId));
+    public function create($idColor, $price, $quantityKg, $orderId, $itemId){
+        $this->validateRecipeItem($idColor, $price, $quantityKg, $itemId);
+        $this->conn->insert("INSERT INTO `order_subitem` (`id_color`, `price`, `quantity_kg`, `id_order_item`) VALUES (?,?,?,?)", 
+                array( $idColor, $price, $quantityKg, $itemId));
     }
     
     public function updateItem($itemId, $quantity, $priceSale){
@@ -59,24 +59,29 @@ class OrderRecipeService {
 
 
     public function getRecipeItemsBy($itemId, $orderId){
-        return $this->conn->select("SELECT i.`id`, oi.`id` as id2,  c.`name`, c.`code`,c.`color_type`, i.`price`, oi.`price_sale`, i.`quantity_kg`, m.`unit`, m.`id` as id_unit, oi.`quantity`
-                                    FROM `color` c, `order_subitem` i, `measurement` m, `order_item` oi
-                                    WHERE i.`id_color`=c.`id` AND oi.`id`=? AND i.`id_order`=? AND m.`id`=c.`id_measurement` AND  i.`id_product`=oi.`id_product`", 
-                array( $itemId, $orderId ));
+        return $this->conn->select(
+            "SELECT i.`id`, oi.`id` as id2,  c.`name`, c.`code`,c.`color_type`, i.`price`,
+                oi.`price_sale`, i.`quantity_kg`, m.`unit`, m.`id` as id_unit, oi.`quantity`
+            FROM  `order_subitem` i 
+            JOIN `color` c ON i.`id_color`=c.`id`
+            JOIN `measurement` m ON m.`id`=c.`id_measurement`
+            JOIN `order_item` oi ON oi.id = i.id_order_item
+            WHERE i.`id_order_item`= ? ", 
+                array( $itemId ));
     }
     
     
     
-     private function validateRecipeItem($idRecipe, $idColor, $price, $quantityKg,$orderId){
+     private function validateRecipeItem($idColor, $price, $quantityKg, $itemId){
         if($idColor == 0)
-            throw new ValidationException("Nie je vybrat8 položka materiálu.");
+            throw new ValidationException("Nie je vybratá položka materiálu.");
  
         $this->checkQuantity($quantityKg);
         
-        $r =  $this->conn->select("SELECT count(*) FROM `order_subitem` WHERE id_product=? AND id_color=? AND id_order=?", 
-                array( $idRecipe, $idColor, $orderId ));
+        $r =  $this->conn->select("SELECT count(*) FROM `order_subitem` WHERE  id_color=? AND id_order_item=?", 
+                array( $idColor, $itemId ));
         
-        if($r[0]["count(*)"] == 1)
+        if($r[0]["count(*)"] > 0)
             throw new ValidationException("Položka sa už v receptúre nachádza.");
         
         if(! Validator::isFloat($price, 5)){

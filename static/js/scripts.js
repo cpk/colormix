@@ -409,8 +409,16 @@ $(function() {
              
              $.getJSON(getUrl, data, function(json) {  
                     if(json.err === 0){
-                        makeCangesAfterResponse(json);
-                        $('input[type=text]').val('');
+                        if(json.confirm){
+                            if(confirm(json.msg)){
+                                $('input[name=confirmed]').val('1');    
+                                $('#pf').submit();
+                            }
+                        }else{
+                            makeCangesAfterResponse(json);
+                            $('input[type=text]').val('');
+                            $('input[name=confirmed]').val('0');
+                        }
                     }else{
                         showStatus(json);
                     }       
@@ -628,7 +636,7 @@ $(function() {
                             obj = $(this); // current thead th item
                     if(input.length === 2 && input[0] === "text"){
                             tr.eq(i).html('<input style="width:'+ (obj.width() - 10) +'px" type="text" name="' + 
-                            input[1] + '" value="'+ tr.eq(i).text().replace(/(kg|ks|ml|L|€|g|\/)/ig ,"").trim() +'" class="ii '+(obj.hasClass("required") ? 'required' : '')+ '" />');
+                            input[1] + '" value="'+ tr.eq(i).text().replace(/\s?(kg|ks|x|ml|L|€|g|\/)/ig ,"").trim() +'" class="ii '+(obj.hasClass("required") ? 'required' : '')+ '" />');
                     }else{
                             tr.eq(i).html('<textarea style="width:'+ (obj.width() - 10) +'px;height:70px;" name="' +input[1] + '" class="ii '+
                             (obj.hasClass("required") ? 'required' : '')+ '" >'+ tr.eq(i).text() +'</textarea>');

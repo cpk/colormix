@@ -21,42 +21,7 @@ class OrderService {
     private $totalSalePrice = null;
     
     
-    private $q = 'SELECT o.`id`, o.`supplier`, o.`date`, c.`name`, u.`givenname`, u.`surname`,
-
-                        (
-                        coalesce((SELECT SUM(x.quantity_kg * x.price )
-                        FROM  `order_item` z, `order_subitem` x
-                        JOIN `color` y ON y.id=x.id_color AND (y.color_type=2 OR y.color_type=3)
-                        WHERE x.id_order=o.id AND z.id_order=x.id_order AND x.id_product=z.id_product),0)
-
-                        + 
-                        coalesce((SELECT SUM(x.quantity_kg * x.price * z.quantity )
-                        FROM  `order_item` z, `order_subitem` x
-                        JOIN `color` y ON y.id=x.id_color AND y.color_type=1
-                        WHERE x.id_order=o.id AND z.id_order=x.id_order AND x.id_product=z.id_product),0) 
-
-                        + 
-                       coalesce((SELECT coalesce(SUM(z.quantity * z.price),0)  FROM `order_item`z, product p  WHERE p.recipe=0 AND p.id=z.id_product AND o.id=z.id_order),0) 
-
-                        ) as spolu_nakup, 
-                      (
-                        coalesce((SELECT ROUND(coalesce(SUM(x.quantity_kg * z.price_sale),0),2)
-                                           FROM  `order_item` z
-                                             LEFT JOIN `order_subitem` x ON  x.id_product=z.id_product AND z.id_order=x.id_order
-                                            JOIN `color` y ON  y.id=x.id_color AND (y.color_type=2 ) 
-                                           WHERE o.id=z.id_order 
-
-                        ),0)
-                        + 
-                        coalesce((SELECT ROUND(coalesce(SUM(z.quantity * z.price_sale),0),2) FROM `order_item`z  WHERE z.id_order=o.id ),0)
-
-                        ) as spolu_predaj 
-
-                    FROM `order` o
-                    JOIN `customer` c ON o.`id_customer`=c.`id` 
-                    LEFT JOIN `user` u ON o.`id_user`=u.`id_user` 
-                    LEFT JOIN `order_item` i ON i.`id_order`= o.`id`
-                    LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product` AND si.`id_order` = i.`id_order`';
+    private $q = 'SELECT *  FROM `view_order` o ';
     
  
     
@@ -100,8 +65,16 @@ class OrderService {
     
     public function delete($idOrder){
         $this->conn->delete("DELETE FROM `order` WHERE id=? LIMIT 1", array( $idOrder ));
+        
+        $items = $this->conn->select("SELECT id FROM order_item WHERE  id_order=? ", array( $idOrder ));
+
+        if(count($items) > 0){
+            for($i = 0; $i > count($items); $i++){
+                $this->conn->delete("DELETE FROM `order_subitem` WHERE id_order_item =?", array( $items[$i]['id'] ));
+            }
+            
+        }
         $this->conn->delete("DELETE FROM `order_item` WHERE id_order=?", array( $idOrder ));
-        $this->conn->delete("DELETE FROM `order_subitem` WHERE id_order=? ", array( $idOrder ));
     }
     
     
@@ -142,7 +115,7 @@ class OrderService {
                                             FROM `order` o
                                             JOIN `customer` c ON o.id_customer=c.id
                                             LEFT JOIN `order_item` i ON i.`id_order`= o.`id`
-                                            LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product`
+                                            LEFT JOIN `order_subitem` si ON si.`id_order_item`= i.`id`
                                             JOIN `product` p ON i.id_product=p.id
                                             WHERE o.`id_customer`=c.`id` AND i.id_product=?
                                             Group by o.id", array($id));
@@ -231,16 +204,30 @@ class OrderService {
         
         $this->create($order[0]['id_customer'], date("Y-m-d"), $order[0]['label']);
         $newOrderId = $this->getInsertId();
-        $this->conn->insert(
-                "INSERT INTO order_item (id_order, id_product, price, quantity, price_sale) ".
-                "SELECT $newOrderId, id_product, price, quantity, price_sale FROM order_item WHERE id_order=?",
-                array($orderId)
+
+        $items = $this->conn->select("SELECT id FROM order_item WHERE id_order = ? ", array($orderId));
+
+        if(count($items) > 0){
+            for($i = 0; $i < count($items); $i++){
+               $this->conn->insert(
+                "INSERT INTO order_item (id_order, id_product, price, quantity, price_sale, item_count) ".
+                "SELECT $newOrderId, id_product, price, quantity, price_sale, item_count FROM order_item WHERE id=?",
+                array($items[$i]['id'])
                 );
-        $this->conn->insert(
-                "INSERT INTO order_subitem (id_color, id_product, quantity_kg, price, id_order) ".
-                "SELECT id_color, id_product, quantity_kg, price,$newOrderId FROM order_subitem WHERE id_order=?",
-                array($orderId)
-                );
+               $newItemId = $this->conn->getInsertId();
+
+               $subItems = $this->conn->select("SELECT * FROM order_subitem WHERE id_order_item = ? ", array($items[$i]['id']));
+
+               if(count($subItems) > 0){
+                       $this->conn->insert(
+                    "INSERT INTO order_subitem (id_color, quantity_kg, price, id_order_item) ".
+                    "SELECT id_color, quantity_kg, price, $newItemId FROM order_subitem WHERE id_order_item=?",
+                    array($items[$i]['id'])
+                    );
+               }
+            }
+        }
+          
         return $newOrderId;
     }
 
@@ -254,17 +241,17 @@ class OrderService {
                                         p.recipe,
                                         i.price,
                                         i.price_sale,
-                                            @tdq := ROUND((i.quantity + (SELECT coalesce(SUM(x.quantity_kg),0) FROM order_subitem x, color y WHERE y.id=x.id_color AND y.color_type=1 AND x.id_product=i.id_product AND x.id_order=i.id_order)),2) as mnozstvo_spolu, 
+                                            @tdq := ROUND((i.quantity + (SELECT coalesce(SUM(x.quantity_kg),0) FROM order_subitem x, color y WHERE y.id=x.id_color AND y.color_type=1 AND x.id_order_item=i.id)),2) as mnozstvo_spolu, 
                                             ROUND(@tdq  * i.price_sale ,2) as cena_spolu_predaj,
                                             @cena_tovar := ROUND(SUM(i.quantity * i.price),2) as cena_tovar,
-                                            @pigmenty := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.color_type!=1 AND x.id_product=i.id_product  AND x.id_order=i.id_order) as pigments,
-                                            @riedidla := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.color_type=1 AND x.id_product=i.id_product  AND x.id_order=i.id_order) as riedidla,
+                                            @pigmenty := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.color_type!=1 AND x.id_order_item=i.id) as pigments,
+                                            @riedidla := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.color_type=1 AND x.id_order_item=i.id ) as riedidla,
                                             @cena_rcp := ROUND(@pigmenty * i.quantity + @riedidla,2) as cena_spolu_nakup,
                                             ROUND(@pigmenty + @riedidla,2) as jednotkova_cena_spolu_nakup
                                         FROM `order` o
                                         JOIN `customer` c ON o.id_customer=c.id
                                         LEFT JOIN `order_item` i ON i.`id_order`= o.`id`
-                                        LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product`
+                                        LEFT JOIN `order_subitem` si ON si.`id_order_item`= i.`id`
                                         JOIN `product` p ON i.id_product=p.id
                                         WHERE o.`id_customer`=c.`id` AND i.id_product=?
                                         GROUP BY o.`id`
@@ -279,17 +266,17 @@ class OrderService {
                                         p.recipe,
                                         i.price,
                                         i.price_sale,
-                                            @tdq := ROUND((i.quantity + (SELECT coalesce(SUM(x.quantity_kg),0) FROM order_subitem x, color y WHERE y.id=x.id_color AND y.color_type=1 AND x.id_product=i.id_product AND x.id_order=i.id_order)),2) as mnozstvo_spolu, 
+                                            @tdq := ROUND((i.quantity + (SELECT coalesce(SUM(x.quantity_kg),0) FROM order_subitem x, color y WHERE y.id=x.id_color AND y.color_type=1 AND x.id_order_item=i.id)),2) as mnozstvo_spolu, 
                                             ROUND(@tdq  * i.price_sale ,2) as cena_spolu_predaj,
                                             @cena_tovar := ROUND(SUM(i.quantity * i.price),2) as cena_tovar,
-                                            @pigmenty := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.color_type!=1 AND x.id_product=i.id_product  AND x.id_order=i.id_order) as pigments,
-                                            @riedidla := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.color_type=1 AND x.id_product=i.id_product  AND x.id_order=i.id_order) as riedidla,
+                                            @pigmenty := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.color_type!=1 AND x.id_order_item=i.id) as pigments,
+                                            @riedidla := (SELECT coalesce(SUM(x.quantity_kg * x.price),0) FROM order_subitem x, color y WHERE x.id_color=y.id AND y.color_type=1 AND x.id_order_item=i.id) as riedidla,
                                             @cena_rcp := ROUND(@pigmenty * i.quantity + @riedidla,2) as cena_spolu_nakup,
                                             ROUND(@pigmenty + @riedidla,2) as jednotkova_cena_spolu_nakup
                                         FROM `order` o
                                         JOIN `customer` c ON o.id_customer=c.id
                                         LEFT JOIN `order_item` i ON i.`id_order`= o.`id`
-                                        LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product`
+                                        LEFT JOIN `order_subitem` si ON si.`id_order_item`= i.`id`
                                         JOIN `product` p ON i.id_product=p.id
                                         WHERE o.`id_customer`=c.`id` AND i.id_product=? AND o.`id_customer`=? AND o.`id`!=?
                                         GROUP BY o.`id`

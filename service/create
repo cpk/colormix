@@ -1,0 +1,142 @@
+ColorService.php:        $this->conn = $conn;
+ColorService.php:       return  $this->conn->select("SELECT c.`id`,c.`code`,c.`name`,c.`price`,c.`color_type`, m.`unit` 
+ColorService.php:        return  $this->conn->select("SELECT c.`id`,c.`code`,c.`name`,c.`price`,c.`id_measurement`,c.`color_type`, m.`unit` 
+ColorService.php:        return  $this->conn->select("SELECT c.`id`,c.`code`,c.`name`,c.`price`,c.`color_type`, m.`unit` 
+ColorService.php:        $this->validateColor($code, $name, $price);
+ColorService.php:        $this->conn->insert("INSERT INTO `color` (`code`, `name`, `price`, `color_type`, `id_measurement`, `supplier`) VALUES (?,?,?,?,?,?)", 
+ColorService.php:        $this->conn->select("DELETE FROM `color` WHERE `id`=? LIMIT 1", array( $id ));
+ColorService.php:        $this->validateColor($code, $name, $price);
+ColorService.php:        $this->conn->update("UPDATE `color` SET code=?, name=?, price=?, color_type=?, id_measurement=? WHERE `id`=? LIMIT 1", 
+ColorService.php:        $this->conn = $conn;
+ColorService.php:        return $this->conn->getInsertId();
+CustomerService.php:        $this->conn = $conn;
+CustomerService.php:        $offset = ($pageNumber == 1 ? 0 :  ($pageNumber * $peerPage) - $peerPage);
+CustomerService.php:        return  $this->conn->select("SELECT * FROM `customer` ".$this->where($searchQuery).
+CustomerService.php:        $this->validateOrder($name, $street, $zip, $city, $ico, $dic, $contactName, $email, $tel);
+CustomerService.php:        $this->conn->insert("INSERT INTO `customer` (`name`, `street`, `zip`, `city`, `ico`, `dic`,`contact_person`,`email`, `tel`) 
+CustomerService.php:        $this->validateOrder($name, $street, $zip, $city, $ico, $dic, $contactName, $email, $tel);
+CustomerService.php:        $this->conn->insert("UPDATE `customer` 
+CustomerService.php:        $this->conn->delete("DELETE FROM `customer` WHERE `id`=? LIMIT 1");
+CustomerService.php:        return  $this->conn->select("SELECT * FROM `customer` WHERE `id`=? LIMIT 1", array( $idCustomer ));
+CustomerService.php:        return $this->conn->getInsertId();
+CustomerService.php:        if($this->countOfItems == null){
+CustomerService.php:            $count =  $this->conn->select("SELECT count(*) FROM `customer` ". $this->where($searchQuery));
+CustomerService.php:            $this->countOfItems = $count[0]["count(*)"];
+CustomerService.php:        return (int)$this->countOfItems;
+CustomerService.php:            throw new ValidationException("E-mail môže obsahovať max. 40 znakov");
+OrderItemService.php:        $this->conn = $conn;
+OrderItemService.php:         $this-> checkQuantity($quantity);
+OrderItemService.php:         $this-> checkQuantity($priceSale);
+OrderItemService.php:         $this->isUsed($idOrder, $idProduct );
+OrderItemService.php:         $priceAndRecipe = $this->getProductPriceAndRecipe($idProduct);
+OrderItemService.php:         $this->conn->insert("INSERT INTO `order_item` (`id_order`, `id_product`, `quantity`, `price`, `price_sale`, `item_count`) VALUES (?,?,?,?,?,?)",
+OrderItemService.php:         $itemId = $this->conn->getInsertId();
+OrderItemService.php:             $this->createSubItems($itemId, $idProduct);
+OrderItemService.php:        $this->checkQuantity($quantity);
+OrderItemService.php:        $this->checkQuantity($priceSale);
+OrderItemService.php:        $this->conn->update("UPDATE `order_item` SET `quantity`=?,`price_sale`=?  WHERE `id`=? LIMIT 1", array($quantity,$priceSale, $IdItem));
+OrderItemService.php:        $this->checkQuantity($priceSale);
+OrderItemService.php:        $this->conn->update("UPDATE `order_item` SET `price_sale`=?  WHERE `id`=? LIMIT 1", array($priceSale, $IdItem));
+OrderItemService.php:        $data = $this->conn->select("SELECT `id_product`, `id_order` FROM `order_item` WHERE `id`=? LIMIT 1", 
+OrderItemService.php:        $this->conn->delete("DELETE FROM `order_subitem` WHERE `id`IN (SELECT id FROM order_item WHERE `id_order`=?)", 
+OrderItemService.php:        $this->conn->delete("DELETE FROM `order_item` WHERE `id`=? LIMIT 1", array( $idItem ));
+OrderItemService.php:        $items = $this->conn->select("SELECT p.`id_color`, p.`quantity_kg`, c.`price` 
+OrderItemService.php:            $this->conn->simpleQuery("INSERT INTO `order_subitem` ( `id_color`, `quantity_kg`, `price`, `id_order_item`) VALUES ".
+OrderItemService.php:      $r =  $this->conn->select("SELECT `price`, `recipe` FROM `product` WHERE `id`=? LIMIT 1", array( $idProduct ));
+OrderItemService.php:    /* PROJECTION --- */
+OrderItemService.php:        return $this->conn->select("SELECT 
+OrderItemService.php:            $r =  $this->conn->select("SELECT count(*) FROM `order_item` WHERE id_product=? AND id_order=?", 
+OrderRecipeService.php:        $this->conn = $conn;
+OrderRecipeService.php:       return  $this->conn->select("SELECT p.`id`, p.`code`, p.`label`, i.`quantity`,i.`id_order`,i.`price_sale`
+OrderRecipeService.php:        $this->validateRecipeItem($idProduct, $idColor, $price, $quantityKg, $orderId);
+OrderRecipeService.php:        $this->conn->insert("INSERT INTO `order_subitem` (`id_product`, `id_color`, `price`, `quantity_kg`, `id_order`) VALUES (?,?,?,?,?)", 
+OrderRecipeService.php:         $this->checkQuantity($quantity);
+OrderRecipeService.php:         $this->conn->update("UPDATE `order_item` SET `quantity`=?, `price_sale`=? WHERE `id`=? LIMIT 1", 
+OrderRecipeService.php:         $this->checkQuantity($quantity);
+OrderRecipeService.php:         $this->checkQuantity($price);
+OrderRecipeService.php:         $this->conn->update("UPDATE `order_subitem` SET `quantity_kg`=?, `price`=? WHERE `id`=? LIMIT 1", 
+OrderRecipeService.php:        $this->conn->delete("DELETE FROM `order_subitem` WHERE `id`=?", array( $itemId ));
+OrderRecipeService.php:        return $this->conn->select(
+OrderRecipeService.php:        $this->checkQuantity($quantityKg);
+OrderRecipeService.php:        $r =  $this->conn->select("SELECT count(*) FROM `order_subitem` WHERE id_product=? AND id_color=? AND id_order=?", 
+OrderService.php:        $this->conn = $conn;
+OrderService.php:        $offset = ($pageNumber == 1 ? 0 :  ($pageNumber * $peerPage) - $peerPage);
+OrderService.php:        return  $this->conn->select( "SELECT * FROM view_order ".
+OrderService.php:                                     $this->where()." ".
+OrderService.php:                                     $this->orderBy()." ".
+OrderService.php:        return  $this->conn->select($this->q.
+OrderService.php:        $this->validateOrder($idCustomer, $date, $label);
+OrderService.php:        $this->conn->insert("INSERT INTO `order` (`id_customer`, `label`, `date`, `id_user`, `supplier`) VALUES (?,?,?,?,?)",
+OrderService.php:        $this->conn->delete("DELETE FROM `order` WHERE id=? LIMIT 1", array( $idOrder ));
+OrderService.php:        $items = $this->conn->select("SELECT id FROM order_item WHERE  id_order=? ", array( $idOrder ));
+OrderService.php:                $this->conn->delete("DELETE FROM `order_subitem` WHERE id_order_item =?", array( $items[$i]['id'] ));
+OrderService.php:        $this->conn->delete("DELETE FROM `order_item` WHERE id_order=?", array( $idOrder ));
+OrderService.php:        return $this->conn->select("SELECT * FROM `order` o, `customer` c, `user` u
+OrderService.php:        return $this->conn->getInsertId();
+OrderService.php:        $this->conn->update("UPDATE `order` SET label=? WHERE id=? LIMIT 1", array( $label, $id ));
+OrderService.php:        $this->conn->update("UPDATE `order` SET `date`=? WHERE id=? LIMIT 1", array( $date, $id ));
+OrderService.php:        if($this->countOfItems == null){
+OrderService.php:            $count =  $this->conn->select("SELECT count(*) FROM view_order ".$this->where());
+OrderService.php:            $this->countOfItems = $count[0]["count(*)"];
+OrderService.php:        return (int)$this->countOfItems;
+OrderService.php:         if($this->countOfItems == null){
+OrderService.php:            $count =  $this->conn->select(" SELECT count(*)
+OrderService.php:            $this->countOfItems = $count[0]["count(*)"];
+OrderService.php:        return (int)$this->countOfItems;
+OrderService.php:        if($this->totalPrice == null)
+OrderService.php:            $this->initTotalsVals();
+OrderService.php:       return $this->totalPrice;
+OrderService.php:        if($this->totalSalePrice == null)
+OrderService.php:                     $this->initTotalsVals();
+OrderService.php:       return $this->totalSalePrice;
+OrderService.php:        $r =  $this->conn->select("select SUM(spolu_nakup) as spolu_nakup, SUM(spolu_predaj) as spolu_predaj from view_order ".$this->where());
+OrderService.php:        $this->totalPrice = $r[0]['spolu_nakup'];
+OrderService.php:        $this->totalSalePrice = $r[0]['spolu_predaj'];
+OrderService.php:        $order = $this->conn->select("SELECT * FROM `order` WHERE `id`=? LIMIT 1", array($orderId));
+OrderService.php:        $this->create($order[0]['id_customer'], date("Y-m-d"), $order[0]['label']);
+OrderService.php:        $newOrderId = $this->getInsertId();
+OrderService.php:        $items = $this->conn->select("SELECT id FROM order_item WHERE id_order = ? ", array($orderId));
+OrderService.php:               $this->conn->insert(
+OrderService.php:               $newItemId = $this->conn->getInsertId();
+OrderService.php:               $subItems = $this->conn->select("SELECT * FROM order_subitem WHERE id_order_item = ? ", array($items[$i]['id']));
+OrderService.php:                       $this->conn->insert(
+OrderService.php:        $offset = ($pageNumber == 1 ? 0 :  ($pageNumber * $peerPage) - $peerPage);
+OrderService.php:        return  $this->conn->select("SELECT o.`id`, o.`date`, c.`name`,  c.`id` as id_customer,
+OrderService.php:        return  $this->conn->select("SELECT o.`id`, o.`date`, c.`name`,
+RecipeItemService.php:        $this->conn = $conn;
+RecipeItemService.php:    /* to do -- */
+RecipeItemService.php:        $this->validateRecipeItem($idRecipe, $idColor, $quantityKg);
+RecipeItemService.php:        $this->conn->insert("INSERT INTO `product_item` (`id_product`, `id_color`, `quantity_kg`) VALUES (?,?,?)", 
+RecipeItemService.php:         $this->checkQuantity($quantityKg);
+RecipeItemService.php:         $this->conn->update("UPDATE `product_item` SET `quantity_kg`=? WHERE `id`=? LIMIT 1", 
+RecipeItemService.php:        $this->conn->delete("DELETE FROM `product_item` WHERE `id`=?", array( $itemId ));
+RecipeItemService.php:        return $this->conn->select("SELECT i.`id`, c.`name`, c.`code` ,c.`supplier`, c.`price`, i.`quantity_kg`, m.`unit`, m.`id` as id_unit
+RecipeItemService.php:        $this->checkQuantity($quantityKg);
+RecipeItemService.php:        $r =  $this->conn->select("SELECT count(*) FROM `product_item` WHERE id_product=? AND id_color=?", 
+RecipeService.php:        $this->conn = $conn;
+RecipeService.php:        $offset = ($pageNumber == 1 ? 0 :  ($pageNumber * $peerPage) - $peerPage);
+RecipeService.php:        return  $this->conn->select("SELECT p.`id`, p.`code`, p.`label`, p.`price`, SUM(i.`quantity_kg` * c.`price`) as total_price
+RecipeService.php:                                    $this->where($searchQuery)."
+RecipeService.php:        return $this->conn->select("SELECT p.`id`, p.`code`, p.`label`, p.`create`, p.`price`,p.`recipe`, SUM(i.`quantity_kg` * c.`price`)  as total_price
+RecipeService.php:        $r = $this->conn->select("SELECT (coalesce(SUM(i.`quantity_kg` * c.`price`),0) + p.price)  as total_price
+RecipeService.php:        $r = $this->conn->select("SELECT c.id
+RecipeService.php:            $this->validateRecipe($code, $label, $price);
+RecipeService.php:            $this->conn->insert("INSERT INTO `product` (`code`, `label`, `price`, `recipe`, `supplier`) VALUES (?,?,?,?,?)", 
+RecipeService.php:            $this->validateRecipe($code, $label, $price);
+RecipeService.php:            $this->conn->insert("UPDATE `product` SET `code`=?, `label`=?, `price`=? WHERE `id`=? LIMIT 1", 
+RecipeService.php:            $this->conn->insert("DELETE FROM `product` WHERE `id`=? LIMIT 1" , array( $recipeId ));
+RecipeService.php:            $this->conn->insert("DELETE FROM `product_item` WHERE `id_product`=?" , array( $recipeId ));
+RecipeService.php:        if($this->countOfItems == null){
+RecipeService.php:            $count =  $this->conn->select("SELECT count(*) FROM `product` p".$this->where($q));
+RecipeService.php:            $this->countOfItems = $count[0]["count(*)"];
+RecipeService.php:        return (int)$this->countOfItems;
+RecipeService.php:        return $this->conn->getInsertId();
+RecipeService.php:        $recipe = $this->conn->select("SELECT * FROM `product` WHERE `id`=? LIMIT 1", array($id));
+RecipeService.php:        $this->create($recipe[0]['code'], $recipe[0]['label']." (duplikat)", $recipe[0]['price'], $recipe[0]['recipe']);
+RecipeService.php:        $generatedId = $this->getInsertId();
+RecipeService.php:        $this->conn->insert(
+StatisticService.php:        $this->conn = $conn;
+StatisticService.php:        return $this->conn->select("SELECT name, 
+StatisticService.php:                                    ".$this->where()."
+StatisticService.php:        return $this->conn->select("SELECT  MONTH(`date`) as m, 
+StatisticService.php:                                    $this->where().

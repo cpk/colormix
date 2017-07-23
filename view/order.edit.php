@@ -4,6 +4,7 @@
     $order = $os->retriveById($_GET['id']);
     $oip = new OrderItemPresenter($conn, WEIGHT_UNIT ,PRICE_UNIT, $os );
 ?>
+
 <div class="tbox mw">
     <strong>Editácia objednávky: <b><?php echo $_GET['id']; ?></b></strong>
     <div class="tcontent">
@@ -109,7 +110,10 @@
                 <span class="fixsize">Položka objednávky:</span>
                 <input type="text" class="w400" id="p" />
                 <span class="margin-l">Množstvo: </span>
-                <input maxlength="10" type="text" class="w100 c required" name="quantity_kg" />
+                <input maxlength="10" type="text" class="w50 c required" name="quantity_kg" />
+
+                <span class="margin-l">Pč. balení: </span>
+                <input maxlength="3" type="text" class="w50 c required" name="item_count" value="1" />
                 <div class="clear"></div>
             </div> 
             <div class="odd">     
@@ -123,6 +127,7 @@
                 <input type="submit" class="ibtn-sm flr" value="Pridať +" />
              </div>
             <input type="hidden" name="act"  value="13" />
+            <input type="hidden" name="confirmed"  value="0" />
             <input type="hidden" name="id_customer"  value="<?php echo $order[0]['id_customer']; ?>" />
             <input type="hidden" name="id_order"  value="<?php echo $_GET['id']; ?>" />
             <input type="hidden" name="id_product"  value="0" />
