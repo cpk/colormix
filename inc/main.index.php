@@ -21,7 +21,7 @@ function isCurrent($pageName, $param){
 <meta name="robots" content="noindex,nofollow"/>
     
 <!-- styles & js -->
-<link rel="stylesheet" href="./static/css/main.css" /> 
+<link rel="stylesheet" href="./static/css/main.css?v=1" /> 
 <link rel="stylesheet" media="print"  href="./static/css/main.print.css" /> 
 <link rel="stylesheet" href="./static/css/chosen.min.css" /> 
 <link rel="stylesheet" href="./static/css/blitzer/jquery-ui-1.8.21.custom.css" /> 
@@ -31,7 +31,7 @@ function isCurrent($pageName, $param){
 <script src="./static/js/chosen.jquery.min.js"></script>
 <script src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.9/jquery-ui.min.js"></script>
 <?php if($page == "statistic") echo '<script type="text/javascript" src="https://www.google.com/jsapi"></script>'; ?>
-<script src="./static/js/scripts.js"></script>
+<script src="./static/js/scripts.js?v=1"></script>
 </head>
 <body>
 	<header>

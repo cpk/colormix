@@ -685,11 +685,12 @@ $(function() {
         return confirm('Skutočne chcete vytvoriť duplikát receptúry?');
     });
 
-    if($('#stats-info').length){
-        console.log('/ajax.php' + document.location.search + "&page=totals");
-
+    setTimeout(function(){
+         if($('#stats-info').length){
+       
         $.get('/ajax.php' + document.location.search + "&page=totals", function(html){
             $('#stats-info').html(html);
         });
     }
+    },500);
 });
