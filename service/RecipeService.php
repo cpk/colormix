@@ -56,7 +56,6 @@ class RecipeService{
                                 FROM `order` o
                                 JOIN `customer` c ON o.id_customer=c.id
                                 LEFT JOIN `order_item` i ON i.`id_order`= o.`id`
-                                LEFT JOIN `order_subitem` si ON si.`id_product`= i.`id_product`
                                 JOIN `product` p ON i.id_product=p.id
                                 WHERE p.`supplier`= ".$_SESSION['supplier']." AND `id_customer`=c.`id` AND i.id_product=?
                                 Group by c.id", array($idRecipe));

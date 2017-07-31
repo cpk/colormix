@@ -51,7 +51,7 @@ class OrderItemPresenter {
                     <th>Dodávateľ</th>
                     <th class="nm priceCol">Názov</th>
                     <th class="il text-quantity required priceCol">Balenie</th>
-                    <th class="il text-item_count required priceCol">Pč</th>
+                    <th class="il text-item_count required priceCol">Pč. ks</th>
                     <th class="priceCol">Cena za j. nákup</th>
                     <th class="priceCol">Cena nákup balenie</th>
                     <th class="il text-price_sale required">Cena za j. predaj</th>
@@ -72,7 +72,7 @@ class OrderItemPresenter {
                 ($row["recipe"] == 1 ? '<td class="recipe nm"><a href="index.php?p=order&amp;sp=redit&amp;id='.$row["id"].'">'.$row["code"].' - '
                 .$row["label"].'</a></td>' : '<td class="nm">'.$row["code"].' - '.$row["label"].'</td>') .
                 '<td class="r il">'.$row["mnozstvo_spolu"].' '.$unit.'</td>'.
-                '<td class="r w50 il">'.$row["item_count"].'x</td>'.
+                '<td class="r w50 il">'.$row["item_count"].'</td>'.
                 '<td class="r">'.$this->format($itemPrice).'</td>'.
                 '<td class="r">'.$this->format($row["cena_spolu_nakup"] + $row["cena_tovar"]).'</td>'.
                 '<td class="r il">'.$this->format($row["price_sale"]).'</td>'.
@@ -115,7 +115,7 @@ class OrderItemPresenter {
     
     public function getProfit($nakup, $predaj){
         if($predaj == 0   || $nakup == 0  ) return "0";
-        return  round(((($predaj - $nakup) / $nakup) * 100),2). " %";
+        return  round(((($predaj - $nakup) / $nakup) * 100),2). "%";
     }
         
     

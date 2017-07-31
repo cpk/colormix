@@ -53,11 +53,7 @@ class OrderItemService {
 
     
     public function delete($idItem){
-        $data = $this->conn->select("SELECT `id_product`, `id_order` FROM `order_item` WHERE `id`=? LIMIT 1", 
-                array( $idItem ));
-        
-        $this->conn->delete("DELETE FROM `order_subitem` WHERE `id`IN (SELECT id FROM order_item WHERE `id_order`=?)", 
-                array( $data[0]['id_order'] ));
+        $this->conn->delete("DELETE FROM `order_subitem` WHERE `id_order_item` = ? ", array( $idItem ));
 
         $this->conn->delete("DELETE FROM `order_item` WHERE `id`=? LIMIT 1", array( $idItem ));
     }
