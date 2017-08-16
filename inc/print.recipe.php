@@ -37,6 +37,7 @@
     <div id="body">
         <!-- HEAD   ==========================  -->
         <h1 class="rcp cst"><?php echo $data[0]['code']." - ". $data[0]['label']; ?></h1>
+        <div id="total-quantity"><b><?php echo $data[0]['item_count'];?> ks</b></div>
         <div id="total"><?php echo $orp->getTotalWeight();?></div>
         
 

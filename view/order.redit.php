@@ -27,6 +27,7 @@
         </form>
         <a href="index.php?p=order&amp;sp=edit&amp;id=<?php echo $data[0]['id_order']; ?>" title="Späť k objednávke" id="back">&laquo; späť</a>
         
+        <div id="total-quantity"><b><?php echo $data[0]['item_count'];?> ks</b></div>
         <div id="total"><?php echo $orp->getTotalWeight();?></div>
         <div class="clear"></div>
         

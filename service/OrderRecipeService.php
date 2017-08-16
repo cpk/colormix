@@ -1,3 +1,4 @@
+
 <?php
 
 /*
@@ -23,7 +24,7 @@ class OrderRecipeService {
     }
     
     public function getRecipeInfo($idRecipe){
-       return  $this->conn->select("SELECT p.`id`, p.`code`, p.`label`, i.`quantity`,i.`id_order`,i.`price_sale`
+       return  $this->conn->select("SELECT p.`id`, p.`code`, p.`label`, i.`quantity`,i.`id_order`,i.`price_sale`, i.`item_count`
                                     FROM `product` p, `order_item` i
                                     WHERE i.`id_product`=p.`id` AND i.`id`=? LIMIT 1", 
                 array( $idRecipe ));
