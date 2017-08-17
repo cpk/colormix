@@ -155,10 +155,10 @@ h1{font-size: 15px;padding:5px;border-bottom:1px solid #ccc;margin-top:15px;}
 .rcp{font-weight:normal;font-size:20px;float:left;position:absolute;left:170px;top:-8px;}
 .rcp em{font-style:normal;color:#b54040;}
 .ercp{margin-top:120px;}
-#total-quantity, #total{position:absolute;top:45px;background:#FFFCDE;border:2px solid #EBE5A4;font-size:20px;color:#333;text-align:center;}
+#total-quantity, #total{position:absolute;top:45px;background:#FFFCDE;border:2px solid #EBE5A4;font-size:18px;color:#333;text-align:center;}
 
 #total{right:30px;}
-#total b, #total-quantity b{display:block;text-align:center;padding:15px;font-size:30px;}
+#total b, #total-quantity b{display:block;text-align:center;padding:15px;font-size:30px;font-weight:normal}
 #total p{padding:3px 5px;font-size:14px;background:#FFFFF2;border-top:1px solid #eee;}
 
 #total-quantity{position:absolute;right:150px;}
